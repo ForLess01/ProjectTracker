@@ -515,8 +515,7 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
                 <path 
                   d="M 0 0 C 0 6, 6 12, 12 12 H 48 C 56 12, 62 18, 62 25 C 62 32, 56 38, 48 38 H 12 C 6 38, 0 44, 0 50 Z" 
                   fill="url(#headerNotchTeamGrad)" 
-                  stroke="rgba(255, 255, 255, 0.2)" 
-                  strokeWidth="1.2"
+                  stroke="none" 
                 />
               </svg>
               <div className="notched-trigger-content">
@@ -629,8 +628,7 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
                 <path 
                   d="M 64 0 C 64 6, 58 12, 52 12 H 16 C 8 12, 2 18, 2 25 C 2 32, 8 38, 16 38 H 52 C 58 38, 64 44, 64 50 Z" 
                   fill="url(#headerNotchProjGrad)" 
-                  stroke="rgba(255, 255, 255, 0.2)" 
-                  strokeWidth="1.2"
+                  stroke="none" 
                 />
               </svg>
               <div className="notched-trigger-content">
@@ -772,8 +770,7 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
               <path 
                 d="M 0 0 C 0 18, 18 36, 36 36 H 408 C 424 36, 440 48, 440 64 V 516 C 440 532, 424 544, 408 544 H 36 C 18 544, 0 562, 0 580 Z" 
                 fill="url(#singleNotchLeftGrad)" 
-                stroke="rgba(255, 255, 255, 0.2)" 
-                strokeWidth="1.2"
+                stroke="none" 
               />
             </svg>
 
@@ -864,8 +861,7 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
               <path 
                 d="M 440 0 C 440 18, 422 36, 404 36 H 32 C 16 36, 0 48, 0 64 V 436 C 0 452, 16 464, 32 464 H 404 C 422 464, 440 482, 440 500 Z" 
                 fill="url(#singleNotchRightGrad)" 
-                stroke="rgba(255, 255, 255, 0.2)" 
-                strokeWidth="1.2"
+                stroke="none" 
               />
             </svg>
 

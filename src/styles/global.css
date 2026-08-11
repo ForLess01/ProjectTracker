@@ -637,6 +637,7 @@ body:has(.confirm-modal-overlay) > *:not(.confirm-modal-overlay) {
 
 .notched-header-trigger-team {
   left: -2rem;
+  clip-path: path('M 0 0 C 0 6, 6 12, 12 12 H 48 C 56 12, 62 18, 62 25 C 62 32, 56 38, 48 38 H 12 C 6 38, 0 44, 0 50 Z');
 }
 
 .notched-header-trigger-team:hover {
@@ -645,6 +646,7 @@ body:has(.confirm-modal-overlay) > *:not(.confirm-modal-overlay) {
 
 .notched-header-trigger-proj {
   right: -2rem;
+  clip-path: path('M 64 0 C 64 6, 58 12, 52 12 H 16 C 8 12, 2 18, 2 25 C 2 32, 8 38, 16 38 H 52 C 58 38, 64 44, 64 50 Z');
 }
 
 .notched-header-trigger-proj:hover {
@@ -699,7 +701,10 @@ body:has(.confirm-modal-overlay) > *:not(.confirm-modal-overlay) {
   flex-direction: column;
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border-radius: 28px;
+  border-radius: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .modal-header-glass {
@@ -742,6 +747,7 @@ body:has(.confirm-modal-overlay) > *:not(.confirm-modal-overlay) {
   margin: 0 !important;
   height: 580px;
   transform: translateY(-50%);
+  clip-path: path('M 0 0 C 0 18, 18 36, 36 36 H 408 C 424 36, 440 48, 440 64 V 516 C 440 532, 424 544, 408 544 H 36 C 18 544, 0 562, 0 580 Z');
   animation: notchDockInLeft 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
@@ -754,6 +760,7 @@ body:has(.confirm-modal-overlay) > *:not(.confirm-modal-overlay) {
   margin: 0 !important;
   height: 500px;
   transform: translateY(-50%);
+  clip-path: path('M 440 0 C 440 18, 422 36, 404 36 H 32 C 16 36, 0 48, 0 64 V 436 C 0 452, 16 464, 32 464 H 404 C 422 464, 440 482, 440 500 Z');
   animation: notchDockInRight 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
