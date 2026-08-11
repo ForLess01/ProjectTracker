@@ -1,0 +1,181 @@
+---
+import LogoMinimal from '../components/LogoMinimal.astro';
+import LiquidGlassButton from '../components/LiquidGlassButton.jsx';
+import '../styles/global.css';
+
+const user = Astro.locals.user;
+---
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project Tracker — Sistema de Gestión de Proyectos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Trade+Winds&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    
+    <!-- Multi-layered Ambient Background -->
+    <div class="gradient-bg">
+      <div class="base"></div>
+      <div class="treatment"></div>
+      <div class="glow"></div>
+      <div class="particles"></div>
+      <div class="vignette"></div>
+      <div class="noise"></div>
+      <div class="scanlines"></div>
+
+      <div class="gradient-bg-content landing-wrapper">
+        <!-- Header -->
+        <header class="landing-header container-xl">
+          <LogoMinimal />
+          <div class="landing-auth-actions">
+            {user ? (
+              <a href="/app" class="btn-primary">
+                Ir al Dashboard →
+              </a>
+            ) : (
+              <>
+                <a href="/login" class="btn-secondary">
+                  Ingresar
+                </a>
+                <a href="/register" class="btn-primary">
+                  Empezar Gratis
+                </a>
+              </>
+            )}
+          </div>
+        </header>
+
+        <!-- Hero Section -->
+        <main class="landing-hero container-lg">
+          <div class="hero-badge">
+            <svg class="hero-badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <span>Project Tracker v1.0</span>
+          </div>
+
+          <h1 class="hero-title">
+            Seguimiento de Proyectos <span class="hero-gradient-text">Rápido y Funcional</span>
+          </h1>
+
+          <p class="hero-subtitle">
+            Organiza tus <strong class="highlight-white">Ideas</strong>, <strong class="highlight-crimson">Bugs</strong>, <strong class="highlight-orange">Optimizaciones</strong> e <strong class="highlight-blue">Implementaciones</strong> en vistas tipo tabla con edición en tiempo real y adjuntos multimedia.
+          </p>
+
+          <div class="hero-cta-wrapper">
+            <LiquidGlassButton client:load href={user ? "/app" : "/register"}>
+              {user ? "Ir al Dashboard" : "Comenzar Ahora"}
+            </LiquidGlassButton>
+          </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="landing-footer container-xl">
+          Project Tracker © 2026 — Todos los derechos reservados.
+        </footer>
+      </div>
+    </div>
+
+    <style>
+      .landing-wrapper {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .landing-header {
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .landing-auth-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .landing-hero {
+        padding-top: 5rem;
+        padding-bottom: 5rem;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+      }
+
+      .hero-badge-icon {
+        width: 0.875rem;
+        height: 0.875rem;
+        color: var(--color-carrot-orange);
+      }
+
+      .highlight-white {
+        color: #ffffff;
+      }
+
+      .highlight-crimson {
+        color: #ff4d6d;
+      }
+
+      .highlight-orange {
+        color: var(--color-carrot-orange);
+      }
+
+      .highlight-blue {
+        color: #38bdf8;
+      }
+
+      .hero-cta-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        max-width: 28rem;
+      }
+
+      .btn-hero-cta {
+        width: 100%;
+        padding: 0.875rem 2rem;
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 1rem;
+        color: #ffffff;
+        background-color: var(--color-steel-blue);
+        border-radius: 1rem;
+        box-shadow: 0 20px 25px -5px rgba(63, 136, 197, 0.3);
+        transition: all 0.2s ease;
+        text-align: center;
+      }
+
+      @media (min-width: 640px) {
+        .btn-hero-cta {
+          width: auto;
+        }
+      }
+
+      .btn-hero-cta:hover {
+        background-color: var(--color-steel-blue-dark);
+        transform: scale(1.02);
+      }
+
+      .landing-footer {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+        text-align: center;
+        font-size: 0.75rem;
+        color: #64748b;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+      }
+    </style>
+  </body>
+</html>

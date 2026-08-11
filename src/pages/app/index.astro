@@ -1,0 +1,69 @@
+---
+import NavbarGlass from '../../components/NavbarGlass.astro';
+import SheetTableApp from '../../components/SheetTableApp.jsx';
+import ProjectSelectorHeader from '../../components/ProjectSelectorHeader.jsx';
+import '../../styles/global.css';
+
+const user = Astro.locals.user;
+if (!user) {
+  return Astro.redirect('/login');
+}
+
+const url = new URL(Astro.request.url);
+const currentView = url.searchParams.get('view') || 'ideas';
+---
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard — Project Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+  </head>
+  <body class="app-body">
+    
+    <!-- Multi-layered Ambient Background -->
+    <div class="gradient-bg" style="min-height: 100vh;">
+      <div class="base"></div>
+      <div class="treatment"></div>
+      <div class="glow"></div>
+      <div class="particles"></div>
+      <div class="vignette"></div>
+      <div class="noise"></div>
+      <div class="scanlines"></div>
+      <div class="halftone"></div>
+      <div class="chromatic"></div>
+
+      <div class="gradient-bg-content" style="position: relative; z-index: 10;">
+        <!-- Liquid Glass Top Slider Navigation Navbar -->
+        <NavbarGlass currentView={currentView} user={user} />
+
+        <!-- Projects & Team Selector Header -->
+        <ProjectSelectorHeader client:load />
+
+        <!-- Main Sheet Workspace -->
+        <main class="app-main-workspace">
+          <SheetTableApp client:load initialView={currentView} currentUser={user} />
+        </main>
+      </div>
+    </div>
+
+    <style>
+      .app-body {
+        background-color: var(--color-midnight);
+        color: #f1f5f9;
+        font-family: var(--font-body);
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      .app-main-workspace {
+        width: 100%;
+      }
+    </style>
+  </body>
+</html>

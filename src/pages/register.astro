@@ -1,0 +1,274 @@
+---
+import LogoMinimal from '../components/LogoMinimal.astro';
+import '../styles/global.css';
+
+const user = Astro.locals.user;
+if (user) {
+  return Astro.redirect('/app');
+}
+---
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crear Cuenta — Project Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    
+    <!-- Multi-layered Ambient Background -->
+    <div class="gradient-bg auth-page-wrapper">
+      <div class="base"></div>
+      <div class="treatment"></div>
+      <div class="glow"></div>
+      <div class="particles"></div>
+      <div class="vignette"></div>
+      <div class="noise"></div>
+      <div class="scanlines"></div>
+
+      <div class="gradient-bg-content auth-card">
+        
+        <div class="auth-header">
+          <LogoMinimal />
+          <h2 class="auth-title">Crear una cuenta</h2>
+          <p class="auth-subtitle">Regístrate para empezar a organizar tus proyectos</p>
+        </div>
+
+        <div id="error-alert" class="auth-alert hidden"></div>
+
+        <!-- Google OAuth Register Button -->
+        <a href="/api/auth/google" class="btn-google">
+          <svg class="google-icon" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span>Registrarse con Google</span>
+        </a>
+
+        <div class="divider-box">
+          <div class="divider-line"></div>
+          <span class="divider-text">o con correo</span>
+        </div>
+
+        <form id="register-form" class="auth-form">
+          <div class="form-group">
+            <label class="form-label">Nombre Completo</label>
+            <input
+              type="text"
+              name="name"
+              required
+              placeholder="Alex Rivera"
+              class="form-input"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Correo Electrónico</label>
+            <input
+              type="email"
+              name="email"
+              required
+              placeholder="alex@ejemplo.com"
+              class="form-input"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Contraseña</label>
+            <input
+              type="password"
+              name="password"
+              required
+              minlength="6"
+              placeholder="Mínimo 6 caracteres"
+              class="form-input"
+            />
+          </div>
+
+          <button type="submit" class="btn-primary btn-submit">
+            Crear Cuenta
+          </button>
+        </form>
+
+        <div class="auth-footer-link">
+          ¿Ya tienes cuenta? <a href="/login" class="link-accent">Inicia sesión</a>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      .auth-page-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+      }
+
+      .auth-header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .auth-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #ffffff;
+        letter-spacing: -0.025em;
+        margin-top: 1rem;
+      }
+
+      .auth-subtitle {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        margin-top: 0.25rem;
+      }
+
+      .auth-alert {
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        border-radius: 0.75rem;
+        background-color: rgba(215, 38, 56, 0.2);
+        border: 1px solid rgba(215, 38, 56, 0.6);
+        font-size: 0.75rem;
+        color: #fca5a5;
+      }
+
+      .auth-alert.hidden {
+        display: none;
+      }
+
+      .btn-google {
+        width: 100%;
+        margin-bottom: 1.25rem;
+        padding: 0.625rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        font-family: var(--font-heading);
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #e2e8f0;
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+      }
+
+      .btn-google:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .google-icon {
+        width: 1rem;
+        height: 1rem;
+      }
+
+      .divider-box {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.25rem;
+      }
+
+      .divider-line {
+        width: 100%;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .divider-text {
+        position: absolute;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+        background-color: #140f2d;
+        font-size: 0.6875rem;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 600;
+      }
+
+      .auth-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+
+      .form-label {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #cbd5e1;
+      }
+
+      .btn-submit {
+        width: 100%;
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+        margin-top: 0.5rem;
+      }
+
+      .auth-footer-link {
+        margin-top: 1.5rem;
+        text-align: center;
+        font-size: 0.75rem;
+        color: #94a3b8;
+      }
+
+      .link-accent {
+        color: var(--color-steel-blue);
+        font-weight: 600;
+      }
+
+      .link-accent:hover {
+        text-decoration: underline;
+      }
+    </style>
+
+    <script>
+      const form = document.getElementById('register-form') as HTMLFormElement;
+      const errorAlert = document.getElementById('error-alert') as HTMLDivElement;
+
+      form?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorAlert.classList.add('hidden');
+
+        const formData = new FormData(form);
+        try {
+          const res = await fetch('/api/auth/register', {
+            method: 'POST',
+            body: formData,
+          });
+
+          const data = await res.json();
+          if (res.ok && data.success) {
+            window.location.href = data.redirect || '/app';
+          } else {
+            errorAlert.textContent = data.error || 'Error al registrar usuario';
+            errorAlert.classList.remove('hidden');
+          }
+        } catch (err) {
+          errorAlert.textContent = 'Error de conexión con el servidor.';
+          errorAlert.classList.remove('hidden');
+        }
+      });
+    </script>
+  </body>
+</html>
