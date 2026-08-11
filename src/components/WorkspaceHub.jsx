@@ -508,8 +508,8 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
               >
                 <defs>
                   <linearGradient id="headerNotchTeamGrad" x1="0" y1="0" x2="64" y2="50" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stopColor="#1c163a" stopOpacity="0.88" />
-                    <stop offset="100%" stopColor="#0c091d" stopOpacity="0.95" />
+                    <stop offset="0%" stopColor="rgba(255, 255, 255, 0.08)" />
+                    <stop offset="100%" stopColor="rgba(255, 255, 255, 0.02)" />
                   </linearGradient>
                 </defs>
                 <path 
@@ -622,8 +622,8 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
               >
                 <defs>
                   <linearGradient id="headerNotchProjGrad" x1="64" y1="0" x2="0" y2="50" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stopColor="#1c163a" stopOpacity="0.88" />
-                    <stop offset="100%" stopColor="#0c091d" stopOpacity="0.95" />
+                    <stop offset="0%" stopColor="rgba(255, 255, 255, 0.08)" />
+                    <stop offset="100%" stopColor="rgba(255, 255, 255, 0.02)" />
                   </linearGradient>
                 </defs>
                 <path 
@@ -765,8 +765,8 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
             >
               <defs>
                 <linearGradient id="singleNotchLeftGrad" x1="0" y1="0" x2="440" y2="580" gradientUnits="userSpaceOnUse">
-                  <stop offset="0%" stopColor="#1c163a" stopOpacity="0.75" />
-                  <stop offset="100%" stopColor="#0c091d" stopOpacity="0.85" />
+                  <stop offset="0%" stopColor="rgba(255, 255, 255, 0.07)" />
+                  <stop offset="100%" stopColor="rgba(255, 255, 255, 0.02)" />
                 </linearGradient>
               </defs>
               <path 
@@ -857,8 +857,8 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
             >
               <defs>
                 <linearGradient id="singleNotchRightGrad" x1="440" y1="0" x2="0" y2="500" gradientUnits="userSpaceOnUse">
-                  <stop offset="0%" stopColor="#1c163a" stopOpacity="0.75" />
-                  <stop offset="100%" stopColor="#0c091d" stopOpacity="0.85" />
+                  <stop offset="0%" stopColor="rgba(255, 255, 255, 0.07)" />
+                  <stop offset="100%" stopColor="rgba(255, 255, 255, 0.02)" />
                 </linearGradient>
               </defs>
               <path 

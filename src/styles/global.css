@@ -627,6 +627,8 @@ body:has(.confirm-modal-overlay) > *:not(.confirm-modal-overlay) {
   justify-content: center;
   transition: filter 0.25s ease;
   z-index: 20;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .notched-header-trigger:hover {
