@@ -103,8 +103,7 @@ export default function InviteModal({ isOpen, onClose, projectId = 'demo-project
                 className="modal-select"
               >
                 <option value="member">Miembro (Puede crear y editar)</option>
-                <option value="admin">Administrador (Control total del proyecto)</option>
-                <option value="viewer">Observador (Solo lectura)</option>
+                <option value="owner">Propietario (Control total del proyecto)</option>
               </select>
             </div>
           </div>
@@ -113,9 +112,10 @@ export default function InviteModal({ isOpen, onClose, projectId = 'demo-project
             type="submit"
             disabled={loading}
             className="btn-primary"
-            style={{ width: '100%', marginTop: '0.5rem' }}
+            style={{ width: '100%', marginTop: '0.5rem', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
           >
-            {loading ? 'Generando Invitación...' : 'Enviar Invitación'}
+            <UserPlus style={{ width: '1rem', height: '1rem' }} />
+            <span>{loading ? 'Generando Invitación...' : 'Enviar Invitación'}</span>
           </button>
         </form>
 

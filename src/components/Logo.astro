@@ -1,0 +1,13 @@
+---
+import LogoMinimal from './LogoMinimal.astro';
+
+interface Props {
+  className?: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  iconOnly?: boolean;
+}
+
+const props = Astro.props;
+---
+
+<LogoMinimal {...props} />
