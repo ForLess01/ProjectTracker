@@ -776,12 +776,9 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
 
             <div className="single-notch-content">
               <div className="modal-header-glass">
-                <div className="modal-header-badge modal-header-badge-team">
-                  <Users className="w-5 h-5 text-[#3f88c5]" />
-                </div>
+                <Users className="w-5 h-5 text-[#3f88c5] flex-shrink-0" />
                 <div>
-                  <h3 className="modal-title">Crear Nuevo Equipo</h3>
-                  <p className="modal-subtitle">Organizá colaboradores y asigná proyectos</p>
+                  <h3 className="modal-title">Nuevo Equipo</h3>
                 </div>
               </div>
 
@@ -799,8 +796,12 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">Descripción</label>
+                  <div className="form-label-row">
+                    <label className="form-label">Descripción</label>
+                    <span className="char-counter">{newTeamDesc.length}/160</span>
+                  </div>
                   <textarea
+                    maxLength={160}
                     placeholder="Propósito u objetivos de este equipo..."
                     value={newTeamDesc}
                     onChange={(e) => setNewTeamDesc(e.target.value)}
@@ -811,16 +812,46 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
 
                 <div className="form-group">
                   <label className="form-label">Color de Identidad</label>
-                  <div className="flex items-center gap-3 pt-1">
+                  <div className="color-picker-group">
                     {['#3f88c5', '#f49d37', '#d72638', '#8b5cf6', '#10b981'].map((col) => (
                       <button
                         type="button"
                         key={col}
                         onClick={() => setNewTeamColor(col)}
-                        className={`w-7 h-7 rounded-full transition-all ${newTeamColor === col ? 'scale-125 ring-2 ring-white ring-offset-2 ring-offset-[#140f2d]' : 'opacity-70 hover:opacity-100 hover:scale-110'}`}
-                        style={{ backgroundColor: col }}
+                        className={`color-swatch-btn ${newTeamColor === col ? 'is-active' : ''}`}
+                        style={{ '--swatch-color': col, backgroundColor: col }}
+                        title={`Seleccionar color ${col}`}
                       />
                     ))}
+
+                    <label 
+                      className={`color-swatch-btn color-picker-custom-label ${!['#3f88c5', '#f49d37', '#d72638', '#8b5cf6', '#10b981'].includes(newTeamColor) ? 'is-active' : ''}`}
+                      style={{ '--swatch-color': newTeamColor || '#3f88c5', backgroundColor: newTeamColor || '#3f88c5' }}
+                      title="Elegir color personalizado"
+                    >
+                      <input
+                        type="color"
+                        value={newTeamColor.startsWith('#') ? newTeamColor : `#${newTeamColor}`}
+                        onChange={(e) => setNewTeamColor(e.target.value)}
+                        className="sr-only-color-input"
+                      />
+                      <Plus className="w-3.5 h-3.5 text-white/90 m-auto pointer-events-none" />
+                    </label>
+
+                    <div className="color-hex-input-wrapper">
+                      <span className="hex-prefix">#</span>
+                      <input
+                        type="text"
+                        maxLength={6}
+                        value={newTeamColor ? newTeamColor.replace('#', '') : ''}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/[^0-9A-Fa-f]/g, '');
+                          setNewTeamColor(`#${val}`);
+                        }}
+                        placeholder="3F88C5"
+                        className="form-input color-hex-input"
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -867,12 +898,9 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
 
             <div className="single-notch-content">
               <div className="modal-header-glass">
-                <div className="modal-header-badge modal-header-badge-proj">
-                  <Layers className="w-5 h-5 text-[#f49d37]" />
-                </div>
+                <Layers className="w-5 h-5 text-[#f49d37] flex-shrink-0" />
                 <div>
-                  <h3 className="modal-title">Crear Nuevo Proyecto</h3>
-                  <p className="modal-subtitle">Iniciá un espacio de seguimiento para tu equipo</p>
+                  <h3 className="modal-title">Nuevo Proyecto</h3>
                 </div>
               </div>
 
