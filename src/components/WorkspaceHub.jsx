@@ -1,10 +1,21 @@
-import React, { useState, useRef, useLayoutEffect, useEffect } from 'react';
+import React, { useState, useRef, useLayoutEffect, useEffect, useCallback } from 'react';
+import ReactDOM from 'react-dom';
 import { 
   Users, Layers, Plus, Sparkles, MoreHorizontal, Shield, Crown, User, 
-  ArrowRight, X, ChevronRight, Hash, UserPlus, FolderPlus, Workflow, Search
+  CornerRightUp, X, ChevronRight, Hash, UserPlus, FolderPlus, Workflow, Search, Check, Link as LinkIcon,
+  Pencil, Lock, Archive, SlidersHorizontal, Clock
 } from 'lucide-react';
+import FloatingToolsDock from './FloatingToolsDock.jsx';
 
 export default function WorkspaceHub({ onSelectProject, currentUser }) {
+  // Multi-selection tool mode states
+  const [activeTool, setActiveTool] = useState(null); // 'edit' | 'archive' | 'delete' | null
+  const [selectedTeamIds, setSelectedTeamIds] = useState([]);
+  const [selectedProjectIds, setSelectedProjectIds] = useState([]);
+  const [showArchivedOnly, setShowArchivedOnly] = useState(false);
+  const [editingTeam, setEditingTeam] = useState(null);
+  const [editingProject, setEditingProject] = useState(null);
+
   // Teams adhering to the Liquid Glass design palette
   const [teams, setTeams] = useState([
     {
@@ -50,36 +61,40 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
     {
       id: 'proj-1',
       name: 'ProjectTracker Core',
+      description: 'Backend de seguimiento, autenticación y API REST principal.',
       teamId: 'team-eng',
       teamName: 'Engineering Team',
       accentColor: '#3f88c5',
       itemCount: 24,
       isFrequent: true,
-      lastActive: 'Hace 5m',
+      lastActive: '5m',
     },
     {
       id: 'proj-2',
       name: 'Design System & Glass UI',
+      description: 'Tokens, componentes Liquid Glass y guía de estilo unificada.',
       teamId: 'team-design',
       teamName: 'Product & Design',
       accentColor: '#f49d37',
       itemCount: 16,
       isFrequent: true,
-      lastActive: 'Hace 1h',
+      lastActive: '1h',
     },
     {
       id: 'proj-3',
       name: 'Mobile SDK Native',
+      description: 'SDK para iOS y Android con soporte offline y sincronización.',
       teamId: 'team-mobile',
       teamName: 'Mobile App Team',
       accentColor: '#8b5cf6',
       itemCount: 19,
       isFrequent: true,
-      lastActive: 'Hace 3h',
+      lastActive: '3h',
     },
     {
       id: 'proj-4',
       name: 'API Gateway Backend',
+      description: 'Gateway de microservicios con rate limiting, logging y caché.',
       teamId: 'team-eng',
       teamName: 'Engineering Team',
       accentColor: '#3f88c5',
@@ -90,62 +105,68 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
     {
       id: 'proj-5',
       name: 'Landing Page & Onboarding',
+      description: 'Flujo de incorporación, A/B tests y conversión de leads.',
       teamId: 'team-growth',
       teamName: 'Growth & Marketing',
       accentColor: '#d72638',
       itemCount: 12,
       isFrequent: true,
-      lastActive: 'Hace 2d',
+      lastActive: '2d',
     },
     {
       id: 'proj-6',
       name: 'Figma Token Sync',
+      description: 'Pipeline de sincronización automática de tokens de diseño a código.',
       teamId: 'team-design',
       teamName: 'Product & Design',
       accentColor: '#f49d37',
       itemCount: 8,
       isFrequent: true,
-      lastActive: 'Hace 3d',
+      lastActive: '3d',
     },
     {
       id: 'proj-7',
       name: 'Push Notification Service',
+      description: 'Infraestructura de notificaciones push multicanal con FCM y APNs.',
       teamId: 'team-mobile',
       teamName: 'Mobile App Team',
       accentColor: '#8b5cf6',
       itemCount: 14,
       isFrequent: true,
-      lastActive: 'Hace 4d',
+      lastActive: '4d',
     },
     {
       id: 'proj-8',
       name: 'Analytics Dashboard',
+      description: 'Panel de métricas de retención, embudo y cohortes en tiempo real.',
       teamId: 'team-growth',
       teamName: 'Growth & Marketing',
       accentColor: '#d72638',
       itemCount: 17,
       isFrequent: true,
-      lastActive: 'Hace 5d',
+      lastActive: '5d',
     },
     {
       id: 'proj-9',
       name: 'Database Sharding & Cache',
+      description: 'Estrategia de sharding, Redis cache y optimización de queries.',
       teamId: 'team-eng',
       teamName: 'Engineering Team',
       accentColor: '#3f88c5',
       itemCount: 9,
       isFrequent: true,
-      lastActive: 'Hace 1sem',
+      lastActive: '1sem',
     },
     {
       id: 'proj-10',
       name: 'Dark Mode Liquid Theme',
+      description: 'Tema oscuro premium con variables CSS y modo alto contraste.',
       teamId: 'team-design',
       teamName: 'Product & Design',
       accentColor: '#f49d37',
       itemCount: 11,
       isFrequent: true,
-      lastActive: 'Hace 1sem',
+      lastActive: '1sem',
     },
   ]);
 
@@ -165,20 +186,93 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
     setTimeout(() => {
       setIsCreateTeamOpen(false);
       setIsClosingTeam(false);
+      setEditingTeam(null);
+      setJustCreatedTeam(null);
     }, 380);
   };
 
   const closeProjectModal = () => {
+    setIsProjTeamDropOpen(false);
     setIsClosingProject(true);
     setTimeout(() => {
       setIsCreateProjectOpen(false);
       setIsClosingProject(false);
+      setEditingProject(null);
     }, 380);
   };
 
-  // Search state
+  const openCreateTeamModal = () => {
+    setEditingTeam(null);
+    setJustCreatedTeam(null);
+    setNewTeamName('');
+    setNewTeamDesc('');
+    setNewTeamColor('#3f88c5');
+    setIsCreateTeamOpen(true);
+  };
+
+  const openCreateProjectModal = () => {
+    setEditingProject(null);
+    setNewProjName('');
+    setNewProjTeamId(selectedTeamFilter ? selectedTeamFilter.id : null);
+    setIsCreateProjectOpen(true);
+  };
+
+  // Permissions logic for Edit Tool
+  const canUserEditTeam = (team) => {
+    return team.role === 'owner';
+  };
+
+  const canUserEditProject = (proj) => {
+    // If project has no team assigned, any user in workspace is owner
+    if (!proj.teamId) return true;
+    const parentTeam = teams.find((t) => t.id === proj.teamId);
+    return !parentTeam || parentTeam.role === 'owner';
+  };
+
+  // Search state & Time Filter state
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [timeFilter, setTimeFilter] = useState('all'); // 'all' | 'today' | 'week' | 'month'
+  const [isTimeFilterOpen, setIsTimeFilterOpen] = useState(false);
+  const timeFilterDropdownRef = useRef(null);
+
+  const timeFilterOptions = [
+    { id: 'all', label: 'Todo', desc: 'Mostrar todos los proyectos' },
+    { id: 'today', label: '24 hrs', desc: 'Actividad en las últimas 24h' },
+    { id: 'week', label: 'Semana', desc: 'Actividad en los últimos 7 días' },
+    { id: 'month', label: 'Mes', desc: 'Actividad en los últimos 30 días' },
+  ];
+
+  const matchesTimeFilter = (item, filter) => {
+    if (!filter || filter === 'all') return true;
+    const last = (item.lastActive || '').toLowerCase();
+    if (filter === 'today') {
+      return last.includes('m') || last.includes('h') || last.includes('ahora') || last.includes('justo');
+    }
+    if (filter === 'week') {
+      return last.includes('m') || last.includes('h') || last.includes('ayer') || last.includes('d') || last.includes('ahora');
+    }
+    if (filter === 'month') {
+      return last.includes('m') || last.includes('h') || last.includes('ayer') || last.includes('d') || last.includes('sem') || last.includes('ahora');
+    }
+    return true;
+  };
+
+  // Close time filter dropdown on click outside
+  useEffect(() => {
+    if (!isTimeFilterOpen) return;
+    const handleClickOutside = (e) => {
+      if (timeFilterDropdownRef.current && !timeFilterDropdownRef.current.contains(e.target)) {
+        setIsTimeFilterOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isTimeFilterOpen]);
+
+  // Truncate a string to `max` chars for display labels
+  const truncateLabel = (str, max = 24) =>
+    str.length > max ? str.slice(0, max) + '\u2026' : str;
 
   // Keyboard shortcut listener: Cmd/Ctrl + F to open search, Esc to close
   useEffect(() => {
@@ -193,37 +287,116 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
         } else if (isCreateProjectOpen) {
           e.preventDefault();
           closeProjectModal();
+        } else if (isTimeFilterOpen) {
+          e.preventDefault();
+          setIsTimeFilterOpen(false);
         } else if (isSearchOpen) {
           e.preventDefault();
           setIsSearchOpen(false);
           setSearchQuery('');
+          setTimeFilter('all');
+          setIsTimeFilterOpen(false);
         }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isSearchOpen, isCreateTeamOpen, isCreateProjectOpen]);
+  }, [isSearchOpen, isCreateTeamOpen, isCreateProjectOpen, isTimeFilterOpen]);
+
+  const baseTeams = teams.filter((t) => (showArchivedOnly ? Boolean(t.isArchived) : !t.isArchived));
+  const baseProjects = projects.filter((p) => (showArchivedOnly ? Boolean(p.isArchived) : !p.isArchived));
 
   const filteredProjects = selectedTeamFilter
-    ? projects.filter((p) => p.teamId === selectedTeamFilter.id)
-    : projects;
+    ? baseProjects.filter((p) => p.teamId === selectedTeamFilter.id)
+    : baseProjects;
 
   const displayTeams = searchQuery.trim()
-    ? teams.filter(
+    ? baseTeams.filter(
         (t) =>
-          t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          t.description.toLowerCase().includes(searchQuery.toLowerCase())
+          (t.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (t.description || '').toLowerCase().includes(searchQuery.toLowerCase())
       )
-    : teams;
+    : baseTeams;
 
-  const displayProjects = searchQuery.trim()
-    ? projects.filter(
+  const displayProjects = (searchQuery.trim()
+    ? baseProjects.filter(
         (p) =>
-          p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          p.teamName.toLowerCase().includes(searchQuery.toLowerCase())
+          (p.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (p.teamName || '').toLowerCase().includes(searchQuery.toLowerCase())
       )
-    : filteredProjects;
+    : filteredProjects).filter((p) => matchesTimeFilter(p, timeFilter));
+
+  // Multi-select mass selection handlers (Toggle All / Deselect All)
+  const isAllTeamsSelected = displayTeams.length > 0 && displayTeams.every((t) => selectedTeamIds.includes(t.id));
+  const isAllProjectsSelected = displayProjects.length > 0 && displayProjects.every((p) => selectedProjectIds.includes(p.id));
+
+  const handleToggleAllTeams = () => {
+    setSelectedTeamIds((prev) => {
+      const allTeamIds = displayTeams.map((t) => t.id);
+      const allSelected = allTeamIds.length > 0 && allTeamIds.every((id) => prev.includes(id));
+      return allSelected ? [] : allTeamIds;
+    });
+  };
+
+  const handleToggleAllProjects = () => {
+    setSelectedProjectIds((prev) => {
+      const allProjIds = displayProjects.map((p) => p.id);
+      const allSelected = allProjIds.length > 0 && allProjIds.every((id) => prev.includes(id));
+      return allSelected ? [] : allProjIds;
+    });
+  };
+
+  const handleCommitArchive = () => {
+    if (selectedTeamIds.length === 0 && selectedProjectIds.length === 0) return;
+    const newArchivedStatus = !showArchivedOnly;
+
+    if (selectedTeamIds.length > 0) {
+      setTeams((prev) =>
+        prev.map((t) =>
+          selectedTeamIds.includes(t.id) ? { ...t, isArchived: newArchivedStatus } : t
+        )
+      );
+    }
+
+    if (selectedProjectIds.length > 0) {
+      setProjects((prev) =>
+        prev.map((p) =>
+          selectedProjectIds.includes(p.id) ? { ...p, isArchived: newArchivedStatus } : p
+        )
+      );
+    }
+  };
+
+  const handleCommitDelete = () => {
+    if (selectedTeamIds.length === 0 && selectedProjectIds.length === 0) return;
+
+    if (selectedTeamIds.length > 0) {
+      setTeams((prev) => prev.filter((t) => !selectedTeamIds.includes(t.id)));
+      setProjects((prev) => prev.filter((p) => !selectedTeamIds.includes(p.teamId)));
+    }
+
+    if (selectedProjectIds.length > 0) {
+      setProjects((prev) => prev.filter((p) => !selectedProjectIds.includes(p.id)));
+    }
+  };
+
+  const handleSelectTool = (tool) => {
+    if (activeTool === 'archive' && (selectedTeamIds.length > 0 || selectedProjectIds.length > 0)) {
+      handleCommitArchive();
+    } else if (activeTool === 'delete' && (selectedTeamIds.length > 0 || selectedProjectIds.length > 0)) {
+      handleCommitDelete();
+    }
+    setActiveTool(tool);
+    setSelectedTeamIds([]);
+    setSelectedProjectIds([]);
+  };
+
+  const handleClearSelection = () => {
+    setActiveTool(null);
+    setSelectedTeamIds([]);
+    setSelectedProjectIds([]);
+  };
 
   // Group hover state & connected SVG curves
   const containerRef = useRef(null);
@@ -231,7 +404,7 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
   const [hoveredTeamId, setHoveredTeamId] = useState(null);
   const [connectorLines, setConnectorLines] = useState([]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!showConnections || !hoveredTeamId || !containerRef.current) {
       setConnectorLines([]);
       return;
@@ -273,64 +446,167 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
     };
 
     updateLines();
+    const rafId = typeof requestAnimationFrame !== 'undefined' ? requestAnimationFrame(updateLines) : null;
+    const tId1 = setTimeout(updateLines, 60);
+    const tId2 = setTimeout(updateLines, 200);
+
+    const container = containerRef.current;
+    let resizeObserver = null;
+    if (typeof ResizeObserver !== 'undefined' && container) {
+      resizeObserver = new ResizeObserver(() => updateLines());
+      resizeObserver.observe(container);
+    }
 
     window.addEventListener('resize', updateLines);
     window.addEventListener('scroll', updateLines, true);
 
     return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      clearTimeout(tId1);
+      clearTimeout(tId2);
+      if (resizeObserver) resizeObserver.disconnect();
       window.removeEventListener('resize', updateLines);
       window.removeEventListener('scroll', updateLines, true);
     };
-  }, [hoveredTeamId, showConnections, teams, projects]);
+  }, [hoveredTeamId, showConnections, selectedTeamFilter, displayTeams, displayProjects, teams, projects]);
 
   // New team form state
   const [newTeamName, setNewTeamName] = useState('');
   const [newTeamDesc, setNewTeamDesc] = useState('');
   const [newTeamColor, setNewTeamColor] = useState('#3f88c5');
+  const [justCreatedTeam, setJustCreatedTeam] = useState(null); // team object created but modal still open
 
   // New project form state
   const [newProjName, setNewProjName] = useState('');
-  const [newProjTeamId, setNewProjTeamId] = useState(teams[0]?.id || '');
+  const [newProjTeamId, setNewProjTeamId] = useState(null); // null = no team
+  const [isProjTeamDropOpen, setIsProjTeamDropOpen] = useState(false);
+  const projTeamTriggerRef = useRef(null);
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
+
+  const updateDropdownPosition = useCallback(() => {
+    if (projTeamTriggerRef.current) {
+      const rect = projTeamTriggerRef.current.getBoundingClientRect();
+      setDropdownPos({
+        top: rect.bottom + 6,
+        left: rect.left,
+        width: rect.width,
+      });
+    }
+  }, []);
+
+  const toggleProjTeamDropdown = () => {
+    if (!isProjTeamDropOpen) {
+      updateDropdownPosition();
+    }
+    setIsProjTeamDropOpen((v) => !v);
+  };
+
+  useEffect(() => {
+    if (!isProjTeamDropOpen) return;
+
+    updateDropdownPosition();
+
+    const handleScrollOrResize = () => {
+      updateDropdownPosition();
+    };
+
+    const handleClickOutside = (e) => {
+      if (
+        projTeamTriggerRef.current &&
+        !projTeamTriggerRef.current.contains(e.target) &&
+        !e.target.closest('.custom-select-dropdown')
+      ) {
+        setIsProjTeamDropOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleScrollOrResize);
+    window.addEventListener('scroll', handleScrollOrResize, true);
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      window.removeEventListener('resize', handleScrollOrResize);
+      window.removeEventListener('scroll', handleScrollOrResize, true);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isProjTeamDropOpen, updateDropdownPosition]);
 
   const handleCreateTeam = (e) => {
     e.preventDefault();
     if (!newTeamName.trim()) return;
-    const newTeam = {
-      id: `team-${Date.now()}`,
-      name: newTeamName.trim(),
-      role: 'owner',
-      description: newTeamDesc.trim() || 'Nuevo espacio de trabajo colaborativo.',
-      memberCount: 1,
-      accentColor: newTeamColor,
-      projectsCount: 0,
-    };
-    setTeams((prev) => [newTeam, ...prev]);
-    setNewTeamName('');
-    setNewTeamDesc('');
-    closeTeamModal();
+    if (editingTeam) {
+      setTeams((prev) =>
+        prev.map((t) =>
+          t.id === editingTeam.id
+            ? {
+                ...t,
+                name: newTeamName.trim(),
+                description: newTeamDesc.trim() || t.description,
+                accentColor: newTeamColor,
+              }
+            : t
+        )
+      );
+      setEditingTeam(null);
+      closeTeamModal();
+    } else {
+      const newTeam = {
+        id: `team-${Date.now()}`,
+        name: newTeamName.trim(),
+        role: 'owner',
+        description: newTeamDesc.trim() || 'Nuevo espacio de trabajo colaborativo.',
+        memberCount: 1,
+        accentColor: newTeamColor,
+        projectsCount: 0,
+      };
+      setTeams((prev) => [newTeam, ...prev]);
+      setJustCreatedTeam(newTeam); // lock submit, show invite CTA
+      // Don't close — let user hit "Invitar Equipo"
+    }
   };
 
   const handleCreateProject = (e) => {
     e.preventDefault();
     if (!newProjName.trim()) return;
-    const parentTeam = teams.find((t) => t.id === newProjTeamId) || teams[0];
-    const newProject = {
-      id: `proj-${Date.now()}`,
-      name: newProjName.trim(),
-      teamId: parentTeam.id,
-      teamName: parentTeam.name,
-      accentColor: parentTeam.accentColor,
-      itemCount: 0,
-      isFrequent: true,
-      lastActive: 'Justo ahora',
-    };
-    setProjects((prev) => [newProject, ...prev]);
-    setTeams((prev) =>
-      prev.map((t) =>
-        t.id === parentTeam.id ? { ...t, projectsCount: t.projectsCount + 1 } : t
-      )
-    );
+    const parentTeam = newProjTeamId ? teams.find((t) => t.id === newProjTeamId) : null;
+    if (editingProject) {
+      setProjects((prev) =>
+        prev.map((p) =>
+          p.id === editingProject.id
+            ? {
+                ...p,
+                name: newProjName.trim(),
+                teamId: parentTeam?.id || null,
+                teamName: parentTeam?.name || 'Sin equipo',
+                accentColor: parentTeam?.accentColor || '#64748b',
+              }
+            : p
+        )
+      );
+      setEditingProject(null);
+    } else {
+      const newProject = {
+        id: `proj-${Date.now()}`,
+        name: newProjName.trim(),
+        teamId: parentTeam?.id || null,
+        teamName: parentTeam?.name || 'Sin equipo',
+        accentColor: parentTeam?.accentColor || '#64748b',
+        itemCount: 0,
+        isFrequent: true,
+        lastActive: 'Justo ahora',
+      };
+      setProjects((prev) => [newProject, ...prev]);
+      if (parentTeam) {
+        setTeams((prev) =>
+          prev.map((t) =>
+            t.id === parentTeam.id ? { ...t, projectsCount: t.projectsCount + 1 } : t
+          )
+        );
+      }
+    }
     setNewProjName('');
+    setNewProjTeamId(null);
+    setIsProjTeamDropOpen(false);
     closeProjectModal();
   };
 
@@ -416,29 +692,83 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
             </div>
           </div>
         ) : (
-          <div className="hub-search-overlay-mist">
+          <div className="hub-search-overlay-mist" ref={timeFilterDropdownRef}>
             <input
               type="text"
               autoFocus
+              maxLength={100}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Escribe para buscar proyectos o equipos..."
               className="hub-search-input"
+              aria-label="Buscar equipos y proyectos"
             />
-            <button
-              type="button"
-              onClick={() => {
-                setIsSearchOpen(false);
-                setSearchQuery('');
-              }}
-              className="search-frameless-icon-btn"
-              title="Cerrar búsqueda (Esc)"
-            >
-              <X className="w-4 h-4" />
-            </button>
+            
+            <div className="search-actions-group">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSearchOpen(false);
+                  setSearchQuery('');
+                  setTimeFilter('all');
+                  setIsTimeFilterOpen(false);
+                }}
+                className="search-frameless-icon-btn"
+                title="Cerrar búsqueda (Esc)"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsTimeFilterOpen((prev) => !prev)}
+                className={`search-frameless-icon-btn ${timeFilter !== 'all' ? 'is-active-filter' : ''}`}
+                title="Filtrar por tiempo"
+                aria-label="Filtrar por tiempo"
+              >
+                <SlidersHorizontal className="w-4 h-4" />
+                {timeFilter !== 'all' && <span className="time-filter-dot" />}
+              </button>
+            </div>
+
+            {/* Horizontal Filter Capsule Centered Under Searchbox */}
+            {isTimeFilterOpen && (
+              <div className="search-time-dropdown-menu">
+                {timeFilterOptions.map((opt) => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => {
+                      setTimeFilter(opt.id);
+                      setIsTimeFilterOpen(false);
+                    }}
+                    className={`time-dropdown-chip ${timeFilter === opt.id ? 'is-selected' : ''}`}
+                    title={opt.desc}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
+         {/* Archived Mode Indicator Banner */}
+      {showArchivedOnly && (
+        <div className="archived-view-banner animate-fade-in">
+          <div className="flex items-center gap-2">
+            <Archive className="w-4 h-4 text-[#f59e0b] flex-shrink-0" />
+            <span>Estás viendo elementos archivados. Para restaurar, selecciona tarjetas y desmarca la herramienta Archivar.</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowArchivedOnly(false)}
+            className="btn-exit-archived"
+          >
+            Ver elementos activos
+          </button>
+        </div>
+      )}
 
       {/* 2. Main Two-Column Layout */}
       <div className="hub-columns-container" ref={containerRef}>
@@ -484,7 +814,7 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
         <div className="hub-column">
           <div className="hub-column-header">
             <button
-              onClick={() => setIsCreateTeamOpen(true)}
+              onClick={openCreateTeamModal}
               className="notched-header-trigger notched-header-trigger-team"
               title="Crear equipo"
             >
@@ -492,7 +822,7 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
                 <div className="trigger-title-default">
                   <Users className="w-5 h-5 text-[#3f88c5] flex-shrink-0" />
                   <h3 className="column-title">
-                    {searchQuery.trim() ? `Equipos "${searchQuery}"` : 'Equipos'}
+                    {searchQuery.trim() ? `Equipos "${truncateLabel(searchQuery)}"` : 'Equipos'}
                     <span className="column-title-tag tag-blue">{displayTeams.length}</span>
                   </h3>
                 </div>
@@ -507,53 +837,109 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
 
           {/* Teams List */}
           <div className="hub-cards-list">
-            {displayTeams.map((team) => {
-              const isHighlighted = showConnections && hoveredTeamId === team.id;
-              const isDimmed = showConnections && hoveredTeamId !== null && hoveredTeamId !== team.id;
-              const isSelected = selectedTeamFilter?.id === team.id;
+            {displayTeams.length > 0 ? (
+              displayTeams.map((team) => {
+                const isHighlighted = showConnections && hoveredTeamId === team.id;
+                const isDimmed = showConnections && hoveredTeamId !== null && hoveredTeamId !== team.id;
+                const isSelected = selectedTeamFilter?.id === team.id;
+                const isCardMultiSelected = selectedTeamIds.includes(team.id);
+                const isEditable = canUserEditTeam(team);
 
-              return (
-                <div
-                  key={team.id}
-                  data-team-card-id={team.id}
-                  onClick={() => setSelectedTeamFilter((prev) => (prev?.id === team.id ? null : team))}
-                  onMouseEnter={() => showConnections && setHoveredTeamId(team.id)}
-                  onMouseLeave={() => setHoveredTeamId(null)}
-                  className={`hub-card team-card ${isHighlighted ? 'is-highlighted-group' : ''} ${isDimmed ? 'is-dimmed-group' : ''} ${isSelected ? 'is-team-selected' : ''}`}
-                  style={{ '--active-accent': team.accentColor }}
-                >
-                  {/* Top-Right Corner Role Ribbon/Badge */}
-                  {getRoleBadge(team.role)}
+                return (
+                  <div
+                    key={team.id}
+                    data-team-card-id={team.id}
+                    onClick={() => {
+                      if (activeTool === 'edit') {
+                        if (isEditable) {
+                          setEditingTeam(team);
+                          setNewTeamName(team.name);
+                          setNewTeamDesc(team.description || '');
+                          setNewTeamColor(team.accentColor || '#3f88c5');
+                          setIsCreateTeamOpen(true);
+                        }
+                      } else if (activeTool) {
+                        setSelectedTeamIds((prev) =>
+                          prev.includes(team.id) ? prev.filter((id) => id !== team.id) : [...prev, team.id]
+                        );
+                      } else {
+                        setSelectedTeamFilter((prev) => (prev?.id === team.id ? null : team));
+                      }
+                    }}
+                    onMouseEnter={() => showConnections && setHoveredTeamId(team.id)}
+                    onMouseLeave={() => setHoveredTeamId(null)}
+                    className={`hub-card team-card ${isHighlighted ? 'is-highlighted-group' : ''} ${isDimmed ? 'is-dimmed-group' : ''} ${isSelected ? 'is-team-selected' : ''} ${isCardMultiSelected ? 'is-card-multi-selected' : ''} ${activeTool === 'edit' ? (isEditable ? 'is-card-editable' : 'is-card-non-editable') : ''}`}
+                    style={{ '--active-accent': team.accentColor }}
+                  >
+                    {/* Full-card selected dark translucent overlay with blur & centered check icon */}
+                    {isCardMultiSelected && (
+                      <div className="card-selected-overlay">
+                        <div className="card-selected-check-pill">
+                          <Check className="w-5 h-5 text-white stroke-[2.5]" />
+                        </div>
+                      </div>
+                    )}
 
-                  {/* Card Header: Icon + Name */}
-                  <div className="card-top-row">
-                    <div className="card-header-identity">
-                      <Users 
-                        className="card-header-icon"
-                        style={{ color: team.accentColor }} 
-                      />
-                      <div className="card-title-group">
-                        <h4 className="card-title">{team.name}</h4>
-                        <span className="card-subtext">{team.memberCount} miembros</span>
+                    {/* Top-Right Corner Role Ribbon/Badge */}
+                    {activeTool === 'edit' ? (
+                      !isEditable && (
+                        <div className="role-badge-corner role-badge-locked" title="Solo el propietario del equipo puede editarlo">
+                          <Lock className="w-3.5 h-3.5 text-slate-400" />
+                        </div>
+                      )
+                    ) : (
+                      getRoleBadge(team.role)
+                    )}
+
+                    {/* Card Header: Icon + Name */}
+                    <div className="card-top-row">
+                      <div className="card-header-identity">
+                        <Users 
+                          className="card-header-icon"
+                          style={{ color: team.accentColor }} 
+                        />
+                        <div className="card-title-group">
+                          <h4 className="card-title">{team.name}</h4>
+                          <span className="card-subtext">{team.memberCount} miembros</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Card Body: Description */}
-                  <p className="card-desc">{team.description}</p>
+                    {/* Card Body: Description */}
+                    <p className="card-desc">{team.description}</p>
 
-                  {/* Card Footer: Stats & Action Arrow */}
-                  <div className="card-footer-row">
-                    <div className="card-stat-pill">
-                      <Layers className="w-3.5 h-3.5 text-slate-400" />
-                      <span>{team.projectsCount} {team.projectsCount === 1 ? 'proyecto' : 'proyectos'}</span>
+                    {/* Card Footer: Stats & Action Arrow */}
+                    <div className="card-footer-row">
+                      <div className="card-stat-pill">
+                        <Layers className="w-3.5 h-3.5 text-slate-400" />
+                        <span>{team.projectsCount} {team.projectsCount === 1 ? 'proyecto' : 'proyectos'}</span>
+                      </div>
+
+                      <ChevronRight className="card-arrow-icon" />
                     </div>
-
-                    <ChevronRight className="card-arrow-icon" />
                   </div>
-                </div>
-              );
-            })}
+                );
+              })
+            ) : (
+              <div className="hub-empty-column-placeholder">
+                <Users className="w-6 h-6 text-slate-500 mb-1" />
+                <p className="text-xs text-slate-300 font-bold">
+                  {showArchivedOnly ? 'No hay equipos archivados' : 'No hay equipos activos'}
+                </p>
+                <p className="text-[11px] text-slate-400">
+                  {showArchivedOnly ? 'Los equipos que archives aparecerán aquí.' : 'Crea un nuevo equipo desde el botón superior.'}
+                </p>
+                {!showArchivedOnly && teams.some((t) => t.isArchived) && (
+                  <button
+                    type="button"
+                    onClick={() => setShowArchivedOnly(true)}
+                    className="btn-exit-archived mt-2"
+                  >
+                    Ver archivados
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -563,8 +949,23 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
         {/* Column 2: Proyectos (Projects) */}
         <div className="hub-column">
           <div className="hub-column-header">
+            {selectedTeamFilter && !searchQuery.trim() && (
+              <button
+                type="button"
+                onClick={() => setSelectedTeamFilter(null)}
+                className="btn-clear-team-filter-pill animate-fade-in"
+                title="Mostrar todos los proyectos"
+                aria-label="Ver todos los proyectos"
+              >
+                <div className="btn-clear-icon-box">
+                  <X className="w-3.5 h-3.5" />
+                </div>
+                <span className="btn-clear-expand-label">Ver todos</span>
+              </button>
+            )}
+
             <button
-              onClick={() => setIsCreateProjectOpen(true)}
+              onClick={openCreateProjectModal}
               className="notched-header-trigger notched-header-trigger-proj"
               title="Crear proyecto"
             >
@@ -573,25 +974,11 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
                   <Layers className="w-5 h-5 text-[#f49d37] flex-shrink-0" />
                   <h3 className="column-title">
                     {searchQuery.trim()
-                      ? `Proyectos "${searchQuery}"`
+                      ? `Proyectos "${truncateLabel(searchQuery)}"`
                       : selectedTeamFilter
-                      ? `Proyectos de ${selectedTeamFilter.name}`
+                      ? `Proyectos de ${truncateLabel(selectedTeamFilter.name, 20)}`
                       : 'Proyectos'}
                     <span className="column-title-tag tag-orange">{displayProjects.length}</span>
-                    {selectedTeamFilter && !searchQuery.trim() && (
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedTeamFilter(null);
-                        }}
-                        className="btn-clear-team-filter"
-                        title="Mostrar todos los proyectos"
-                      >
-                        <X className="w-3 h-3" />
-                        <span>Ver todos</span>
-                      </button>
-                    )}
                   </h3>
                 </div>
 
@@ -605,61 +992,104 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
 
           {/* Projects List with Liquid Glass Style */}
           <div className="hub-cards-list">
-            {displayProjects.map((proj) => {
-              const isHighlighted = showConnections && hoveredTeamId === proj.teamId;
-              const isDimmed = showConnections && hoveredTeamId !== null && hoveredTeamId !== proj.teamId;
+            {displayProjects.length > 0 ? (
+              displayProjects.map((proj) => {
+                const isHighlighted = showConnections && hoveredTeamId === proj.teamId;
+                const isDimmed = showConnections && hoveredTeamId !== null && hoveredTeamId !== proj.teamId;
+                const isCardMultiSelected = selectedProjectIds.includes(proj.id);
+                const isEditable = canUserEditProject(proj);
 
-              return (
-                <div
-                  key={proj.id}
-                  data-proj-card-id={proj.id}
-                  data-proj-team-id={proj.teamId}
-                  onClick={() => onSelectProject && onSelectProject(proj)}
-                  onMouseEnter={() => showConnections && setHoveredTeamId(proj.teamId)}
-                  onMouseLeave={() => setHoveredTeamId(null)}
-                  className={`hub-card project-card ${isHighlighted ? 'is-highlighted-group' : ''} ${isDimmed ? 'is-dimmed-group' : ''}`}
-                  style={{ '--active-accent': proj.accentColor }}
-                >
-                  {/* Card Header: Icon + Title & Team */}
-                  <div className="card-top-row">
-                    <div className="card-header-identity">
-                      <Hash 
-                        className="card-header-icon"
-                        style={{ color: proj.accentColor }} 
-                      />
-                      <div className="card-title-group">
-                        <h4 className="card-title">{proj.name}</h4>
-                        <div className="card-team-inline">
-                          <span 
-                            className="team-indicator-dot" 
-                            style={{ backgroundColor: proj.accentColor }} 
-                          />
+                return (
+                  <div
+                    key={proj.id}
+                    data-proj-card-id={proj.id}
+                    data-proj-team-id={proj.teamId}
+                    onClick={() => {
+                      if (activeTool === 'edit') {
+                        if (isEditable) {
+                          setEditingProject(proj);
+                          setNewProjName(proj.name);
+                          setNewProjTeamId(proj.teamId || null);
+                          setIsCreateProjectOpen(true);
+                        }
+                      } else if (activeTool) {
+                        setSelectedProjectIds((prev) =>
+                          prev.includes(proj.id) ? prev.filter((id) => id !== proj.id) : [...prev, proj.id]
+                        );
+                      } else {
+                        if (onSelectProject) onSelectProject(proj);
+                      }
+                    }}
+                    onMouseEnter={() => showConnections && setHoveredTeamId(proj.teamId)}
+                    onMouseLeave={() => setHoveredTeamId(null)}
+                    className={`hub-card project-card ${isHighlighted ? 'is-highlighted-group' : ''} ${isDimmed ? 'is-dimmed-group' : ''} ${isCardMultiSelected ? 'is-card-multi-selected' : ''} ${activeTool === 'edit' ? (isEditable ? 'is-card-editable' : 'is-card-non-editable') : ''}`}
+                    style={{ '--active-accent': proj.accentColor }}
+                  >
+                    {/* Full-card selected dark translucent overlay with blur & centered check icon */}
+                    {isCardMultiSelected && (
+                      <div className="card-selected-overlay">
+                        <div className="card-selected-check-pill">
+                          <Check className="w-5 h-5 text-white stroke-[2.5]" />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Top-Right Corner Locked Indicator during Edit Mode */}
+                    {activeTool === 'edit' && !isEditable && (
+                      <div className="role-badge-corner role-badge-locked" title="Solo el propietario del equipo asignado puede editar este proyecto">
+                        <Lock className="w-3.5 h-3.5 text-slate-400" />
+                      </div>
+                    )}
+
+                    {/* Card Header: Icon + Title & Team */}
+                    <div className="card-top-row">
+                      <div className="card-header-identity">
+                        <Hash 
+                          className="card-header-icon"
+                          style={{ color: proj.accentColor }} 
+                        />
+                        <div className="card-title-group">
+                          <h4 className="card-title">{proj.name}</h4>
                           <span className="card-subtext">{proj.teamName}</span>
                         </div>
                       </div>
+
+                      <span className="card-time-badge">{proj.lastActive}</span>
                     </div>
 
-                    <span className="card-time-badge">{proj.lastActive}</span>
-                  </div>
-
-                  {/* Card Body: Tracking Metric */}
-                  <div className="card-metric-box">
-                    <span className="metric-count">{proj.itemCount}</span>
-                    <span className="metric-label">filas en seguimiento</span>
-                  </div>
-
-                  {/* Card Footer: Status & Action Arrow */}
-                  <div className="card-footer-row">
-                    <div className="card-status-indicator">
-                      <span className="status-dot-pulse" />
-                      <span>Activo</span>
+                    {/* Card Body: Tracking Metric */}
+                    <div className="card-metric-box">
+                      <span className="metric-count">{proj.itemCount}</span>
+                      <span className="metric-label">filas</span>
                     </div>
 
-                    <ArrowRight className="card-arrow-icon card-arrow-primary" />
+                    {/* Card Footer: Action Arrow */}
+                    <div className="card-footer-row">
+                      <CornerRightUp className="card-arrow-icon card-arrow-primary card-arrow-solo" />
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })
+            ) : (
+              <div className="hub-empty-column-placeholder">
+                <Layers className="w-6 h-6 text-slate-500 mb-1" />
+                <p className="text-xs text-slate-300 font-bold">
+                  {showArchivedOnly ? 'No hay proyectos archivados' : 'No hay proyectos activos'}
+                </p>
+                <p className="text-[11px] text-slate-400">
+                  {showArchivedOnly ? 'Los proyectos que archives aparecerán aquí.' : 'Crea un nuevo proyecto desde el botón superior.'}
+                </p>
+                {!showArchivedOnly && projects.some((p) => p.isArchived) && (
+                  <button
+                    type="button"
+                    onClick={() => setShowArchivedOnly(true)}
+                    className="btn-exit-archived mt-2"
+                  >
+                    Ver archivados
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -742,22 +1172,52 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
 
             <div className="single-notch-content">
               <div className="modal-header-glass">
-                <Users className="w-5 h-5 text-[#3f88c5] flex-shrink-0" />
-                <div>
-                  <h3 className="modal-title">Nuevo Equipo</h3>
+                <div className="modal-header-identity">
+                  {editingTeam ? (
+                    <Pencil className="w-5 h-5 text-[#38bdf8] flex-shrink-0" />
+                  ) : (
+                    <Users className="w-5 h-5 text-[#3f88c5] flex-shrink-0" />
+                  )}
+                  <h3 className="modal-title">{editingTeam ? 'Editar Equipo' : 'Nuevo Equipo'}</h3>
                 </div>
+
+                {!editingTeam && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const teamToInvite = justCreatedTeam;
+                      closeTeamModal();
+                      setTimeout(() => {
+                        window.dispatchEvent(new CustomEvent('open-invite-modal', {
+                          detail: { preselectedTeam: teamToInvite, activeTab: 'invite', teams: teams }
+                        }));
+                      }, 420);
+                    }}
+                    className={`btn-expandable-invite ${justCreatedTeam ? 'is-invite-ready' : ''}`}
+                    title="Invitar Equipo"
+                  >
+                    <div className="btn-icon-box">
+                      <UserPlus className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="btn-expand-label">
+                      {justCreatedTeam ? 'Invitar ahora' : 'Invitar Equipo'}
+                    </span>
+                  </button>
+                )}
               </div>
 
               <form onSubmit={handleCreateTeam} className="modal-form">
                 <div className="form-group">
-                  <label className="form-label">Nombre del Equipo</label>
+                  <label className="form-label">Nombre</label>
                   <input
                     type="text"
                     required
                     placeholder="ej. Mobile Growth, Data Science"
-                    value={newTeamName}
+                    value={justCreatedTeam ? justCreatedTeam.name : newTeamName}
                     onChange={(e) => setNewTeamName(e.target.value)}
                     className="form-input"
+                    disabled={!!justCreatedTeam}
+                    readOnly={!!justCreatedTeam}
                   />
                 </div>
 
@@ -822,12 +1282,19 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
                 </div>
 
                 <div className="modal-actions pt-2">
+                  {justCreatedTeam ? (
+                    <div className="btn-create-success">
+                      <Check className="w-4 h-4" />
+                      <span>Equipo creado</span>
+                    </div>
+                  ) : (
+                    <button type="submit" className="btn-primary inline-flex items-center gap-1.5">
+                      {editingTeam ? <Check className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
+                      <span>{editingTeam ? 'Guardar Cambios' : 'Crear Equipo'}</span>
+                    </button>
+                  )}
                   <button type="button" onClick={closeTeamModal} className="btn-secondary inline-flex items-center gap-1.5">
-                    <span>Cancelar</span>
-                  </button>
-                  <button type="submit" className="btn-primary inline-flex items-center gap-1.5">
-                    <UserPlus className="w-4 h-4" />
-                    <span>Crear Equipo</span>
+                    <span>{justCreatedTeam ? 'Listo' : 'Cancelar'}</span>
                   </button>
                 </div>
               </form>
@@ -836,7 +1303,7 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
         </div>
       )}
 
-      {/* 5. Modal: Crear Nuevo Proyecto (Notched Side Dock — Derecha) */}
+      {/* 5. Modal: Crear / Editar Proyecto (Notched Side Dock — Derecha) */}
       {isCreateProjectOpen && (
         <div className={`marfil-drawer-layer marfil-drawer-layer-right ${isClosingProject ? 'is-closing' : ''}`}>
           <div className="marfil-drawer-backdrop" onClick={closeProjectModal} />
@@ -864,18 +1331,23 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
 
             <div className="single-notch-content">
               <div className="modal-header-glass">
-                <Layers className="w-5 h-5 text-[#f49d37] flex-shrink-0" />
-                <div>
-                  <h3 className="modal-title">Nuevo Proyecto</h3>
+                <div className="modal-header-identity">
+                  {editingProject ? (
+                    <Pencil className="w-5 h-5 text-[#38bdf8] flex-shrink-0" />
+                  ) : (
+                    <Layers className="w-5 h-5 text-[#f49d37] flex-shrink-0" />
+                  )}
+                  <h3 className="modal-title">{editingProject ? 'Editar Proyecto' : 'Nuevo Proyecto'}</h3>
                 </div>
               </div>
 
               <form onSubmit={handleCreateProject} className="modal-form">
                 <div className="form-group">
-                  <label className="form-label">Nombre del Proyecto</label>
+                  <label className="form-label">Nombre</label>
                   <input
                     type="text"
                     required
+                    maxLength={80}
                     placeholder="ej. Rediseño Checkout, API v2"
                     value={newProjName}
                     onChange={(e) => setNewProjName(e.target.value)}
@@ -883,28 +1355,87 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
                   />
                 </div>
 
+                {/* Custom team picker — no native <select> */}
                 <div className="form-group">
-                  <label className="form-label">Equipo Responsable</label>
-                  <select
-                    value={newProjTeamId}
-                    onChange={(e) => setNewProjTeamId(e.target.value)}
-                    className="form-input form-select"
-                  >
-                    {teams.map((t) => (
-                      <option key={t.id} value={t.id} className="bg-[#140f2d] text-white">
-                        {t.name}
-                      </option>
-                    ))}
-                  </select>
+                  <label className="form-label">Equipo Asignado <span className="form-label-optional">(opcional)</span></label>
+                  <div className="custom-select-wrapper">
+                    <button
+                      ref={projTeamTriggerRef}
+                      type="button"
+                      className="custom-select-trigger"
+                      onClick={toggleProjTeamDropdown}
+                      aria-haspopup="listbox"
+                      aria-expanded={isProjTeamDropOpen}
+                    >
+                      {newProjTeamId ? (
+                        <span className="custom-select-value">
+                          <span
+                            className="custom-select-dot"
+                            style={{ backgroundColor: teams.find(t => t.id === newProjTeamId)?.accentColor || '#64748b' }}
+                          />
+                          {teams.find(t => t.id === newProjTeamId)?.name}
+                        </span>
+                      ) : (
+                        <span className="custom-select-placeholder">Sin equipo asignado</span>
+                      )}
+                      <ChevronRight
+                        className={`custom-select-chevron ${isProjTeamDropOpen ? 'is-open' : ''}`}
+                      />
+                    </button>
+
+                    {isProjTeamDropOpen && typeof document !== 'undefined' && ReactDOM.createPortal(
+                      <ul
+                        className="custom-select-dropdown custom-select-dropdown-portal"
+                        role="listbox"
+                        style={{
+                          position: 'fixed',
+                          top: `${dropdownPos.top}px`,
+                          left: `${dropdownPos.left}px`,
+                          width: `${dropdownPos.width}px`,
+                          zIndex: 100005,
+                        }}
+                      >
+                        {/* No-team option */}
+                        <li
+                          role="option"
+                          aria-selected={newProjTeamId === null}
+                          className={`custom-select-option ${newProjTeamId === null ? 'is-selected' : ''}`}
+                          onClick={() => { setNewProjTeamId(null); setIsProjTeamDropOpen(false); }}
+                        >
+                          <span className="custom-select-dot" style={{ backgroundColor: '#475569' }} />
+                          <span>Sin equipo asignado</span>
+                          {newProjTeamId === null && <Check className="w-3.5 h-3.5 ml-auto text-[#60a5fa]" />}
+                        </li>
+
+                        {/* Separator */}
+                        <li className="custom-select-separator" role="separator" />
+
+                        {teams.map((t) => (
+                          <li
+                            key={t.id}
+                            role="option"
+                            aria-selected={newProjTeamId === t.id}
+                            className={`custom-select-option ${newProjTeamId === t.id ? 'is-selected' : ''}`}
+                            onClick={() => { setNewProjTeamId(t.id); setIsProjTeamDropOpen(false); }}
+                          >
+                            <span className="custom-select-dot" style={{ backgroundColor: t.accentColor }} />
+                            <span>{t.name}</span>
+                            {newProjTeamId === t.id && <Check className="w-3.5 h-3.5 ml-auto text-[#60a5fa]" />}
+                          </li>
+                        ))}
+                      </ul>,
+                      document.body
+                    )}
+                  </div>
                 </div>
 
                 <div className="modal-actions pt-4">
+                  <button type="submit" className="btn-primary inline-flex items-center gap-1.5">
+                    {editingProject ? <Check className="w-4 h-4" /> : <FolderPlus className="w-4 h-4" />}
+                    <span>{editingProject ? 'Guardar Cambios' : 'Crear Proyecto'}</span>
+                  </button>
                   <button type="button" onClick={closeProjectModal} className="btn-secondary inline-flex items-center gap-1.5">
                     <span>Cancelar</span>
-                  </button>
-                  <button type="submit" className="btn-primary inline-flex items-center gap-1.5">
-                    <FolderPlus className="w-4 h-4" />
-                    <span>Crear Proyecto</span>
                   </button>
                 </div>
               </form>
@@ -912,6 +1443,21 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
           </div>
         </div>
       )}
+
+      {/* Floating Action Tools Dock with Selection & Mass Selection */}
+      <FloatingToolsDock
+        activeTool={activeTool}
+        onSelectTool={handleSelectTool}
+        selectedTeamIds={selectedTeamIds}
+        selectedProjectIds={selectedProjectIds}
+        isAllTeamsSelected={isAllTeamsSelected}
+        isAllProjectsSelected={isAllProjectsSelected}
+        onToggleAllTeams={handleToggleAllTeams}
+        onToggleAllProjects={handleToggleAllProjects}
+        showArchivedOnly={showArchivedOnly}
+        onToggleViewArchived={() => setShowArchivedOnly((prev) => !prev)}
+        onClearSelection={handleClearSelection}
+      />
 
     </div>
   );
