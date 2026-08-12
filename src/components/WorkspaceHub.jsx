@@ -483,43 +483,28 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
         {/* Column 1: Equipos (Teams) */}
         <div className="hub-column">
           <div className="hub-column-header">
-            <div className="column-header-title">
-              <div className="column-icon-badge">
-                <Users className="w-4.5 h-4.5 text-[#3f88c5]" />
-              </div>
-              <h3 className="column-title">
-                {searchQuery.trim() ? `Equipos "${searchQuery}"` : 'Tus Equipos'}
-                <span className="column-title-tag tag-blue">{displayTeams.length}</span>
-              </h3>
-            </div>
-
             <button
               onClick={() => setIsCreateTeamOpen(true)}
               className="notched-header-trigger notched-header-trigger-team"
               title="Crear equipo"
             >
-              <svg 
-                className="notched-trigger-svg" 
-                width="64" 
-                height="50" 
-                viewBox="0 0 64 50" 
-                fill="none" 
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <defs>
-                  <linearGradient id="headerNotchTeamGrad" x1="0" y1="0" x2="64" y2="50" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stopColor="rgba(255, 255, 255, 0.08)" />
-                    <stop offset="100%" stopColor="rgba(255, 255, 255, 0.02)" />
-                  </linearGradient>
-                </defs>
-                <path 
-                  d="M 0 0 C 0 6, 6 12, 12 12 H 48 C 56 12, 62 18, 62 25 C 62 32, 56 38, 48 38 H 12 C 6 38, 0 44, 0 50 Z" 
-                  fill="url(#headerNotchTeamGrad)" 
-                  stroke="none" 
-                />
-              </svg>
-              <div className="notched-trigger-content">
-                <UserPlus className="w-5 h-5 text-[#3f88c5]" />
+              <div className="trigger-content-wrapper">
+                <div className="trigger-title-default">
+                  <div className="column-icon-badge">
+                    <Users className="w-4.5 h-4.5 text-[#3f88c5]" />
+                  </div>
+                  <h3 className="column-title">
+                    {searchQuery.trim() ? `Equipos "${searchQuery}"` : 'Tus Equipos'}
+                    <span className="column-title-tag tag-blue">{displayTeams.length}</span>
+                  </h3>
+                </div>
+
+                <div className="trigger-title-hover">
+                  <div className="column-icon-badge hover-icon-badge-team">
+                    <UserPlus className="w-4.5 h-4.5 text-[#3f88c5]" />
+                  </div>
+                  <span className="hover-action-text text-[#3f88c5]">Crear Equipo</span>
+                </div>
               </div>
             </button>
           </div>
@@ -582,57 +567,46 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
         {/* Column 2: Proyectos (Projects) */}
         <div className="hub-column">
           <div className="hub-column-header">
-            <div className="column-header-title">
-              <div className="column-icon-badge">
-                <Layers className="w-4.5 h-4.5 text-[#f49d37]" />
-              </div>
-              <h3 className="column-title">
-                {searchQuery.trim()
-                  ? `Proyectos "${searchQuery}"`
-                  : selectedTeamFilter
-                  ? `Proyectos de ${selectedTeamFilter.name}`
-                  : 'Todos los Proyectos'}
-                <span className="column-title-tag tag-orange">{displayProjects.length}</span>
-                {selectedTeamFilter && !searchQuery.trim() && (
-                  <button
-                    onClick={() => setSelectedTeamFilter(null)}
-                    className="btn-clear-team-filter"
-                    title="Mostrar todos los proyectos"
-                  >
-                    <X className="w-3 h-3" />
-                    <span>Ver todos</span>
-                  </button>
-                )}
-              </h3>
-            </div>
-
             <button
               onClick={() => setIsCreateProjectOpen(true)}
               className="notched-header-trigger notched-header-trigger-proj"
               title="Crear proyecto"
             >
-              <svg 
-                className="notched-trigger-svg" 
-                width="64" 
-                height="50" 
-                viewBox="0 0 64 50" 
-                fill="none" 
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <defs>
-                  <linearGradient id="headerNotchProjGrad" x1="64" y1="0" x2="0" y2="50" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stopColor="rgba(255, 255, 255, 0.08)" />
-                    <stop offset="100%" stopColor="rgba(255, 255, 255, 0.02)" />
-                  </linearGradient>
-                </defs>
-                <path 
-                  d="M 64 0 C 64 6, 58 12, 52 12 H 16 C 8 12, 2 18, 2 25 C 2 32, 8 38, 16 38 H 52 C 58 38, 64 44, 64 50 Z" 
-                  fill="url(#headerNotchProjGrad)" 
-                  stroke="none" 
-                />
-              </svg>
-              <div className="notched-trigger-content">
-                <FolderPlus className="w-5 h-5 text-[#f49d37]" />
+              <div className="trigger-content-wrapper">
+                <div className="trigger-title-default">
+                  <div className="column-icon-badge">
+                    <Layers className="w-4.5 h-4.5 text-[#f49d37]" />
+                  </div>
+                  <h3 className="column-title">
+                    {searchQuery.trim()
+                      ? `Proyectos "${searchQuery}"`
+                      : selectedTeamFilter
+                      ? `Proyectos de ${selectedTeamFilter.name}`
+                      : 'Todos los Proyectos'}
+                    <span className="column-title-tag tag-orange">{displayProjects.length}</span>
+                    {selectedTeamFilter && !searchQuery.trim() && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedTeamFilter(null);
+                        }}
+                        className="btn-clear-team-filter"
+                        title="Mostrar todos los proyectos"
+                      >
+                        <X className="w-3 h-3" />
+                        <span>Ver todos</span>
+                      </button>
+                    )}
+                  </h3>
+                </div>
+
+                <div className="trigger-title-hover">
+                  <div className="column-icon-badge hover-icon-badge-proj">
+                    <FolderPlus className="w-4.5 h-4.5 text-[#f49d37]" />
+                  </div>
+                  <span className="hover-action-text text-[#f49d37]">Crear Proyecto</span>
+                </div>
               </div>
             </button>
           </div>

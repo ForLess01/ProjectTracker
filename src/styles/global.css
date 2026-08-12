@@ -630,23 +630,23 @@ body:has(.confirm-modal-overlay) > *:not(.confirm-modal-overlay) {
 }
 
 /* Notched Header Trigger Button (Zero Hover Movement) */
+/* Morphing Notched Column Header Trigger Tabs */
 .notched-header-trigger {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 64px;
-  height: 50px;
-  border: none;
-  background: transparent;
-  padding: 0;
-  cursor: pointer;
+  height: 48px;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  transition: filter 0.25s ease;
   z-index: 20;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  overflow: hidden;
 }
 
 .notched-header-trigger:hover {
@@ -655,57 +655,102 @@ body:has(.confirm-modal-overlay) > *:not(.confirm-modal-overlay) {
 
 .notched-header-trigger-team {
   left: -2rem;
-  clip-path: path('M 0 0 C 0 6, 6 12, 12 12 H 48 C 56 12, 62 18, 62 25 C 62 32, 56 38, 48 38 H 12 C 6 38, 0 44, 0 50 Z');
+  border-left: none;
+  border-radius: 0 24px 24px 0;
+  padding: 0 1.25rem 0 2.75rem;
 }
 
 .notched-header-trigger-team:hover {
-  filter: drop-shadow(0 0 10px rgba(63, 136, 197, 0.4));
+  background: linear-gradient(135deg, rgba(63, 136, 197, 0.22) 0%, rgba(255, 255, 255, 0.06) 100%);
+  border-color: rgba(63, 136, 197, 0.45);
+  box-shadow: 0 0 20px rgba(63, 136, 197, 0.25);
 }
 
 .notched-header-trigger-proj {
   right: -2rem;
-  clip-path: path('M 64 0 C 64 6, 58 12, 52 12 H 16 C 8 12, 2 18, 2 25 C 2 32, 8 38, 16 38 H 52 C 58 38, 64 44, 64 50 Z');
+  border-right: none;
+  border-radius: 24px 0 0 24px;
+  padding: 0 2.75rem 0 1.25rem;
 }
 
 .notched-header-trigger-proj:hover {
-  filter: drop-shadow(0 0 10px rgba(244, 157, 55, 0.4));
+  background: linear-gradient(135deg, rgba(244, 157, 55, 0.22) 0%, rgba(255, 255, 255, 0.06) 100%);
+  border-color: rgba(244, 157, 55, 0.45);
+  box-shadow: 0 0 20px rgba(244, 157, 55, 0.25);
 }
 
 @media (min-width: 1440px) {
   .notched-header-trigger-team {
     left: calc(-1 * ((100vw - 1440px) / 2 + 2rem));
+    padding-left: calc((100vw - 1440px) / 2 + 2.75rem);
   }
   .notched-header-trigger-proj {
     right: calc(-1 * ((100vw - 1440px) / 2 + 2rem));
+    padding-right: calc((100vw - 1440px) / 2 + 2.75rem);
   }
 }
 
-.notched-trigger-svg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: visible;
-}
-
-.notched-trigger-content {
+.trigger-content-wrapper {
   position: relative;
-  z-index: 1;
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 100%;
   height: 100%;
 }
 
-.notched-header-trigger-team .notched-trigger-content {
-  padding-left: 0.75rem;
+.trigger-title-default {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
 }
 
-.notched-header-trigger-proj .notched-trigger-content {
-  padding-right: 0.75rem;
+.trigger-title-hover {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%) scale(0.95);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.notched-header-trigger-proj .trigger-title-hover {
+  left: auto;
+  right: 0;
+}
+
+.notched-header-trigger:hover .trigger-title-default {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.95);
+  pointer-events: none;
+}
+
+.notched-header-trigger:hover .trigger-title-hover {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+  pointer-events: auto;
+}
+
+.hover-action-text {
+  font-family: var(--font-heading);
+  font-size: 0.9375rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.hover-icon-badge-team {
+  background: rgba(63, 136, 197, 0.25);
+  border: 1px solid rgba(63, 136, 197, 0.4);
+}
+
+.hover-icon-badge-proj {
+  background: rgba(244, 157, 55, 0.25);
+  border: 1px solid rgba(244, 157, 55, 0.4);
 }
 
 /* Notched Side Dock Container (Glassmorphism) */
@@ -1999,8 +2044,6 @@ table.sheet-table td img:hover,
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 0.75rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .column-title {
