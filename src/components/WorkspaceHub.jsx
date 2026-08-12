@@ -490,19 +490,15 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
             >
               <div className="trigger-content-wrapper">
                 <div className="trigger-title-default">
-                  <div className="column-icon-badge">
-                    <Users className="w-4.5 h-4.5 text-[#3f88c5]" />
-                  </div>
+                  <Users className="w-5 h-5 text-[#3f88c5] flex-shrink-0" />
                   <h3 className="column-title">
-                    {searchQuery.trim() ? `Equipos "${searchQuery}"` : 'Tus Equipos'}
+                    {searchQuery.trim() ? `Equipos "${searchQuery}"` : 'Equipos'}
                     <span className="column-title-tag tag-blue">{displayTeams.length}</span>
                   </h3>
                 </div>
 
                 <div className="trigger-title-hover">
-                  <div className="column-icon-badge hover-icon-badge-team">
-                    <UserPlus className="w-4.5 h-4.5 text-[#3f88c5]" />
-                  </div>
+                  <UserPlus className="w-5 h-5 text-[#3f88c5] flex-shrink-0" />
                   <span className="hover-action-text text-[#3f88c5]">Crear Equipo</span>
                 </div>
               </div>
@@ -574,15 +570,13 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
             >
               <div className="trigger-content-wrapper">
                 <div className="trigger-title-default">
-                  <div className="column-icon-badge">
-                    <Layers className="w-4.5 h-4.5 text-[#f49d37]" />
-                  </div>
+                  <Layers className="w-5 h-5 text-[#f49d37] flex-shrink-0" />
                   <h3 className="column-title">
                     {searchQuery.trim()
                       ? `Proyectos "${searchQuery}"`
                       : selectedTeamFilter
                       ? `Proyectos de ${selectedTeamFilter.name}`
-                      : 'Todos los Proyectos'}
+                      : 'Proyectos'}
                     <span className="column-title-tag tag-orange">{displayProjects.length}</span>
                     {selectedTeamFilter && !searchQuery.trim() && (
                       <button
@@ -602,9 +596,7 @@ export default function WorkspaceHub({ onSelectProject, currentUser }) {
                 </div>
 
                 <div className="trigger-title-hover">
-                  <div className="column-icon-badge hover-icon-badge-proj">
-                    <FolderPlus className="w-4.5 h-4.5 text-[#f49d37]" />
-                  </div>
+                  <FolderPlus className="w-5 h-5 text-[#f49d37] flex-shrink-0" />
                   <span className="hover-action-text text-[#f49d37]">Crear Proyecto</span>
                 </div>
               </div>
