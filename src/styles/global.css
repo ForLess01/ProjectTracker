@@ -1827,8 +1827,7 @@ table.sheet-table td img:not(.assignee-avatar-img):not(.assignee-popover-avatar)
 }
 
 .masonry-item-card {
-  display: flex !important;
-  flex-direction: column !important;
+  display: block !important;
   width: 100% !important;
   border-radius: 1.1rem !important;
   background: rgba(255, 255, 255, 0.04) !important;
@@ -1851,24 +1850,28 @@ table.sheet-table td img:not(.assignee-avatar-img):not(.assignee-popover-avatar)
   position: relative !important;
   width: 100% !important;
   height: auto !important;
-  min-height: 100px !important;
-  background: rgba(10, 7, 24, 0.6) !important;
+  min-height: 0 !important;
+  background: transparent !important;
   overflow: hidden !important;
   cursor: pointer !important;
   display: block !important;
+  line-height: 0 !important;
+  font-size: 0 !important;
 }
 
 .masonry-item-image {
   width: 100% !important;
   height: auto !important;
   display: block !important;
-  object-fit: contain !important;
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
   max-width: 100% !important;
   max-height: none !important;
   border-radius: 0 !important;
   border: none !important;
   box-shadow: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  vertical-align: middle !important;
 }
 
 .masonry-item-card:hover .masonry-item-image {
