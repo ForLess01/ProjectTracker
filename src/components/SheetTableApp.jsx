@@ -1910,6 +1910,7 @@ function AssigneeCell({ item, users, onSelect, style }) {
 
 function MasonryModal({ item, onClose, onUpload, isUploading }) {
   const fileInputRef = useRef(null);
+  const dragCounterRef = useRef(0);
   const [isDragActive, setIsDragActive] = useState(false);
   const [lightboxImg, setLightboxImg] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
@@ -1928,21 +1929,34 @@ function MasonryModal({ item, onClose, onUpload, isUploading }) {
     onUpload(file);
   };
 
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounterRef.current += 1;
+    if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+      setIsDragActive(true);
+    }
+  };
+
   const handleDragOver = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragActive(true);
   };
 
   const handleDragLeave = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragActive(false);
+    dragCounterRef.current -= 1;
+    if (dragCounterRef.current <= 0) {
+      dragCounterRef.current = 0;
+      setIsDragActive(false);
+    }
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    dragCounterRef.current = 0;
     setIsDragActive(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleValidateAndUpload(e.dataTransfer.files[0]);
@@ -2011,7 +2025,27 @@ function MasonryModal({ item, onClose, onUpload, isUploading }) {
 
   const modalContent = (
     <div className="masonry-modal-overlay" onClick={onClose}>
-      <div className="masonry-modal-card" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="masonry-modal-card"
+        onClick={(e) => e.stopPropagation()}
+        onDragEnter={handleDragEnter}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
+        {/* Full-Modal Drag & Drop Blur Overlay */}
+        {isDragActive && (
+          <div className="masonry-modal-drag-overlay">
+            <div className="masonry-modal-drag-content">
+              <div className="masonry-modal-drag-icon-pulse">
+                <Upload style={{ width: '38px', height: '38px' }} />
+              </div>
+              <p className="masonry-modal-drag-title">Suelta tus imágenes aquí</p>
+              <p className="masonry-modal-drag-subtitle">Se agregarán automáticamente a este elemento</p>
+            </div>
+          </div>
+        )}
+
         {/* Modal Header */}
         <div className="masonry-modal-header">
           <div className="masonry-modal-header-info">
@@ -2050,23 +2084,20 @@ function MasonryModal({ item, onClose, onUpload, isUploading }) {
 
         {/* Modal Body */}
         <div className="masonry-modal-body">
-          {/* Pure CSS Drop Zone */}
+          {/* Clean Drop Zone */}
           <div
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
-            className={`masonry-dropzone ${isDragActive ? 'is-drag-active' : ''}`}
+            className="masonry-dropzone"
           >
             <div className="masonry-dropzone-icon">
-              <Upload style={{ width: '18px', height: '18px' }} />
+              <Upload style={{ width: '28px', height: '28px' }} />
             </div>
             <div>
               <p className="masonry-dropzone-title">
                 {isUploading ? 'Subiendo archivo...' : 'Arrastra y suelta imágenes aquí, o haz clic para explorar'}
               </p>
               <p className="masonry-dropzone-subtitle">
-                Soporta PNG, JPG, WebP y pegado directo desde el portapapeles (<span className="masonry-dropzone-kbd">Ctrl+V / ⌘+V</span>)
+                Soporta PNG, JPG, WebP y pegado directo desde el portapapeles (<span className="masonry-dropzone-kbd">Ctrl+V / <span className="masonry-cmd-symbol">⌘</span>+V</span>)
               </p>
             </div>
           </div>
@@ -2145,28 +2176,11 @@ function MasonryModal({ item, onClose, onUpload, isUploading }) {
                         </div>
                       </div>
 
-                      {/* Card Caption / Meta Footer */}
+                      {/* Card Caption / Meta Footer (Centered & Truncated) */}
                       <div className="masonry-item-footer">
                         <p className="masonry-item-filename" title={att.filename}>
                           {att.filename || `captura_${idx + 1}.png`}
                         </p>
-
-                        <button
-                          type="button"
-                          onClick={() => handleCopyLink(att)}
-                          className={`masonry-item-copy-btn ${copiedId === (att.id || att.url) ? 'is-copied' : ''}`}
-                          title="Copiar enlace"
-                        >
-                          {copiedId === (att.id || att.url) ? (
-                            <>
-                              <Check style={{ width: '12px', height: '12px' }} /> Copiado
-                            </>
-                          ) : (
-                            <>
-                              <Copy style={{ width: '12px', height: '12px' }} /> Copiar
-                            </>
-                          )}
-                        </button>
                       </div>
                     </div>
                   ))}

@@ -1695,62 +1695,119 @@ table.sheet-table td img:not(.assignee-avatar-img):not(.assignee-popover-avatar)
   align-items: center !important;
   justify-content: center !important;
   text-align: center !important;
-  gap: 0.6rem !important;
-  padding: 1.5rem 1.25rem !important;
+  gap: 0.65rem !important;
+  padding: 1.25rem 1rem !important;
   border-radius: 1.15rem !important;
-  border: 2px dashed rgba(255, 255, 255, 0.18) !important;
-  background: rgba(255, 255, 255, 0.03) !important;
+  border: none !important;
+  background: rgba(255, 255, 255, 0.02) !important;
   backdrop-filter: blur(12px) !important;
   cursor: pointer !important;
   transition: all 0.2s ease !important;
 }
 
 .masonry-dropzone:hover {
-  border-color: rgba(56, 189, 248, 0.6) !important;
-  background: rgba(56, 189, 248, 0.06) !important;
-  box-shadow: 0 0 25px rgba(56, 189, 248, 0.15) !important;
-}
-
-.masonry-dropzone.is-drag-active {
-  border-color: #38bdf8 !important;
-  background: rgba(56, 189, 248, 0.14) !important;
-  box-shadow: 0 0 30px rgba(56, 189, 248, 0.3) !important;
+  background: rgba(56, 189, 248, 0.05) !important;
 }
 
 .masonry-dropzone-icon {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 2.6rem !important;
-  height: 2.6rem !important;
-  border-radius: 9999px !important;
-  background: rgba(56, 189, 248, 0.15) !important;
   color: #38bdf8 !important;
-  border: 1px solid rgba(56, 189, 248, 0.3) !important;
+  background: none !important;
+  border: none !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 0 !important;
 }
 
 .masonry-dropzone-title {
-  font-size: 0.85rem !important;
+  font-size: 0.9rem !important;
   font-weight: 600 !important;
   color: #ffffff !important;
   margin: 0 !important;
 }
 
 .masonry-dropzone-subtitle {
-  font-size: 0.75rem !important;
+  font-size: 0.78rem !important;
   color: #94a3b8 !important;
-  margin: 0.15rem 0 0 0 !important;
+  margin: 0.2rem 0 0 0 !important;
 }
 
 .masonry-dropzone-kbd {
-  display: inline-block !important;
-  padding: 0.1rem 0.4rem !important;
-  background: rgba(255, 255, 255, 0.12) !important;
-  border-radius: 0.35rem !important;
-  font-family: monospace !important;
-  font-size: 0.7rem !important;
-  color: #e2e8f0 !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  font-weight: 700 !important;
+  font-size: 0.82rem !important;
+  color: #ffffff !important;
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  display: inline !important;
+}
+
+.masonry-cmd-symbol {
+  font-size: 0.95rem !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+  vertical-align: baseline !important;
+}
+
+/* DRAG & DROP MODAL OVERLAY */
+.masonry-modal-drag-overlay {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 50 !important;
+  background: rgba(13, 9, 32, 0.8) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 1.5rem !important;
+  border: 2px dashed rgba(56, 189, 248, 0.8) !important;
+  animation: modalFadeIn 0.15s ease-out !important;
+  pointer-events: none !important;
+}
+
+.masonry-modal-drag-content {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  gap: 0.85rem !important;
+  padding: 2rem !important;
+}
+
+.masonry-modal-drag-icon-pulse {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 4.5rem !important;
+  height: 4.5rem !important;
+  border-radius: 9999px !important;
+  background: rgba(56, 189, 248, 0.18) !important;
+  color: #38bdf8 !important;
+  border: 1px solid rgba(56, 189, 248, 0.4) !important;
+  box-shadow: 0 0 35px rgba(56, 189, 248, 0.45) !important;
+  animation: pulseGlow 1.5s infinite alternate ease-in-out !important;
+}
+
+@keyframes pulseGlow {
+  from { transform: scale(0.96); box-shadow: 0 0 20px rgba(56, 189, 248, 0.3); }
+  to { transform: scale(1.06); box-shadow: 0 0 45px rgba(56, 189, 248, 0.7); }
+}
+
+.masonry-modal-drag-title {
+  font-size: 1.35rem !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  margin: 0 !important;
+}
+
+.masonry-modal-drag-subtitle {
+  font-size: 0.85rem !important;
+  color: #94a3b8 !important;
+  margin: 0 !important;
 }
 
 /* PINTEREST-STYLE MASONRY GRID (FLEX COLUMNS) */
@@ -1875,44 +1932,25 @@ table.sheet-table td img:not(.assignee-avatar-img):not(.assignee-popover-avatar)
 .masonry-item-footer {
   display: flex !important;
   align-items: center !important;
-  justify-content: space-between !important;
-  gap: 0.5rem !important;
+  justify-content: center !important;
   padding: 0.75rem 1rem !important;
   border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
   background: rgba(15, 10, 32, 0.5) !important;
+  width: 100% !important;
 }
 
 .masonry-item-filename {
-  font-size: 0.75rem !important;
+  font-size: 0.78rem !important;
   font-weight: 600 !important;
   color: #e2e8f0 !important;
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
-  flex: 1 !important;
+  text-align: center !important;
+  width: 100% !important;
+  max-width: 100% !important;
   margin: 0 !important;
-}
-
-.masonry-item-copy-btn {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 0.25rem !important;
-  font-size: 0.7rem !important;
-  font-weight: 600 !important;
-  color: #94a3b8 !important;
-  background: none !important;
-  border: none !important;
-  cursor: pointer !important;
-  transition: color 0.15s ease !important;
-  flex-shrink: 0 !important;
-}
-
-.masonry-item-copy-btn:hover {
-  color: #38bdf8 !important;
-}
-
-.masonry-item-copy-btn.is-copied {
-  color: #34d399 !important;
+  display: block !important;
 }
 
 /* EMPTY STATE */
