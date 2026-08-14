@@ -1991,33 +1991,29 @@ function MasonryModal({ item, onClose, onUpload, isUploading }) {
 
   return (
     <div className="masonry-modal-overlay" onClick={onClose}>
-      <div
-        className="masonry-modal-card max-w-4xl w-[94%] bg-[#120d2a]/95 backdrop-blur-2xl border border-white/15 rounded-3xl shadow-[0_25px_60px_rgba(0,0,0,0.85)] flex flex-col max-h-[88vh] overflow-hidden animate-scale-up"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="masonry-modal-card" onClick={(e) => e.stopPropagation()}>
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-white/[0.02]">
-          <div className="flex flex-col gap-0.5">
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-heading font-extrabold uppercase tracking-wider text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded-md border border-cyan-500/20">
-                Galería de Imágenes
-              </span>
-              <span className="text-xs text-slate-400">
+        <div className="masonry-modal-header">
+          <div className="masonry-modal-header-info">
+            <div className="masonry-modal-tag-row">
+              <span className="masonry-modal-tag">Galería de Imágenes</span>
+              <span className="masonry-modal-counter">
                 • {attachments.length} {attachments.length === 1 ? 'elemento' : 'elementos'}
               </span>
             </div>
-            <h3 className="text-base font-bold text-white leading-snug mt-0.5 max-w-xl truncate" title={item.title}>
+            <h3 className="masonry-modal-title" title={item.title}>
               {item.title}
             </h3>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="masonry-modal-actions">
             <button
+              type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploading}
-              className="btn-primary flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-xl transition-all shadow-lg hover:shadow-cyan-500/25"
+              className="masonry-upload-btn"
             >
-              <Upload className="w-3.5 h-3.5" />
+              <Upload style={{ width: '14px', height: '14px' }} />
               <span>{isUploading ? 'Subiendo...' : 'Subir Imagen'}</span>
             </button>
 
@@ -2025,66 +2021,60 @@ function MasonryModal({ item, onClose, onUpload, isUploading }) {
               ref={fileInputRef}
               type="file"
               accept="image/*"
-              className="hidden"
+              style={{ display: 'none' }}
               onChange={(e) => {
                 if (e.target.files?.[0]) handleValidateAndUpload(e.target.files[0]);
               }}
             />
 
             <button
+              type="button"
               onClick={onClose}
-              className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+              className="masonry-close-btn"
               title="Cerrar modal (Esc)"
             >
-              <X className="w-5 h-5" />
+              <X style={{ width: '18px', height: '18px' }} />
             </button>
           </div>
         </div>
 
         {/* Modal Body */}
-        <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6 custom-scrollbar">
-          {/* Enhanced Drop Zone */}
+        <div className="masonry-modal-body">
+          {/* Pure CSS Drop Zone */}
           <div
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
-            className={`relative p-5 rounded-2xl border-2 border-dashed transition-all duration-200 cursor-pointer flex flex-col items-center justify-center text-center gap-2 ${
-              isDragActive
-                ? 'border-cyan-400 bg-cyan-500/10 shadow-[0_0_20px_rgba(34,211,238,0.2)]'
-                : 'border-white/15 bg-white/[0.02] hover:border-cyan-400/50 hover:bg-white/[0.04]'
-            }`}
+            className={`masonry-dropzone ${isDragActive ? 'is-drag-active' : ''}`}
           >
-            <div className="w-10 h-10 rounded-full bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shadow-inner">
-              <Upload className="w-5 h-5" />
+            <div className="masonry-dropzone-icon">
+              <Upload style={{ width: '18px', height: '18px' }} />
             </div>
             <div>
-              <p className="text-xs font-semibold text-white">
+              <p className="masonry-dropzone-title">
                 {isUploading ? 'Subiendo archivo...' : 'Arrastra y suelta imágenes aquí, o haz clic para explorar'}
               </p>
-              <p className="text-[11px] text-slate-400 mt-0.5">
-                Soporta PNG, JPG, WebP y pegado directo desde el portapapeles (<kbd className="px-1 py-0.5 bg-white/10 rounded text-[10px] text-slate-300 font-mono">Ctrl+V</kbd>)
+              <p className="masonry-dropzone-subtitle">
+                Soporta PNG, JPG, WebP y pegado directo desde el portapapeles (<span className="masonry-dropzone-kbd">Ctrl+V</span>)
               </p>
             </div>
           </div>
 
           {/* Masonry / Gallery Grid */}
           {attachments.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="masonry-grid-container">
               {attachments.map((att, idx) => (
-                <div
-                  key={att.id || idx}
-                  className="group relative rounded-2xl bg-white/[0.03] border border-white/10 hover:border-cyan-400/50 overflow-hidden shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl flex flex-col"
-                >
+                <div key={att.id || idx} className="masonry-item-card">
                   {/* Thumbnail Image Container */}
                   <div
-                    className="relative aspect-video w-full bg-[#0a0718] overflow-hidden cursor-pointer flex items-center justify-center"
+                    className="masonry-item-media-wrap"
                     onClick={() => setLightboxImg(att)}
                   >
                     <img
                       src={att.url}
                       alt={att.filename || `Imagen ${idx + 1}`}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="masonry-item-image"
                       onError={(e) => {
                         if (!e.currentTarget.dataset.retried) {
                           e.currentTarget.dataset.retried = 'true';
@@ -2094,17 +2084,17 @@ function MasonryModal({ item, onClose, onUpload, isUploading }) {
                     />
 
                     {/* Image Overlay with Quick Action Buttons */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                    <div className="masonry-item-overlay">
                       <button
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
                           setLightboxImg(att);
                         }}
-                        className="p-2 rounded-xl bg-black/60 backdrop-blur-md text-white hover:bg-cyan-500 hover:text-black transition-colors shadow-lg"
+                        className="masonry-overlay-btn"
                         title="Ver en pantalla completa"
                       >
-                        <ZoomIn className="w-4 h-4" />
+                        <ZoomIn style={{ width: '16px', height: '16px' }} />
                       </button>
 
                       <button
@@ -2113,10 +2103,10 @@ function MasonryModal({ item, onClose, onUpload, isUploading }) {
                           e.stopPropagation();
                           window.open(att.url, '_blank');
                         }}
-                        className="p-2 rounded-xl bg-black/60 backdrop-blur-md text-white hover:bg-cyan-500 hover:text-black transition-colors shadow-lg"
+                        className="masonry-overlay-btn"
                         title="Abrir en pestaña nueva"
                       >
-                        <ExternalLink className="w-4 h-4" />
+                        <ExternalLink style={{ width: '16px', height: '16px' }} />
                       </button>
 
                       <button
@@ -2125,45 +2115,43 @@ function MasonryModal({ item, onClose, onUpload, isUploading }) {
                           e.stopPropagation();
                           handleCopyLink(att);
                         }}
-                        className="p-2 rounded-xl bg-black/60 backdrop-blur-md text-white hover:bg-cyan-500 hover:text-black transition-colors shadow-lg"
+                        className="masonry-overlay-btn"
                         title="Copiar enlace"
                       >
                         {copiedId === (att.id || att.url) ? (
-                          <Check className="w-4 h-4 text-emerald-400" />
+                          <Check style={{ width: '16px', height: '16px', color: '#34d399' }} />
                         ) : (
-                          <Copy className="w-4 h-4" />
+                          <Copy style={{ width: '16px', height: '16px' }} />
                         )}
                       </button>
                     </div>
 
                     {/* Counter Badge */}
-                    <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-md text-[10px] font-semibold text-slate-300 border border-white/10">
+                    <div className="masonry-item-badge">
                       #{idx + 1}
                     </div>
                   </div>
 
-                  {/* Card Caption / Meta */}
-                  <div className="p-3 flex items-center justify-between gap-2 border-t border-white/5 bg-white/[0.01]">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium text-slate-200 truncate" title={att.filename}>
-                        {att.filename || `captura_${idx + 1}.png`}
-                      </p>
-                    </div>
+                  {/* Card Caption / Meta Footer */}
+                  <div className="masonry-item-footer">
+                    <p className="masonry-item-filename" title={att.filename}>
+                      {att.filename || `captura_${idx + 1}.png`}
+                    </p>
 
                     <button
                       type="button"
                       onClick={() => handleCopyLink(att)}
-                      className="text-[11px] text-slate-400 hover:text-cyan-400 transition-colors flex items-center gap-1 shrink-0"
+                      className={`masonry-item-copy-btn ${copiedId === (att.id || att.url) ? 'is-copied' : ''}`}
                       title="Copiar enlace"
                     >
                       {copiedId === (att.id || att.url) ? (
-                        <span className="text-emerald-400 font-semibold flex items-center gap-1">
-                          <Check className="w-3 h-3" /> Copiado
-                        </span>
+                        <>
+                          <Check style={{ width: '12px', height: '12px' }} /> Copiado
+                        </>
                       ) : (
-                        <span className="flex items-center gap-1">
-                          <Copy className="w-3 h-3" /> Copiar
-                        </span>
+                        <>
+                          <Copy style={{ width: '12px', height: '12px' }} /> Copiar
+                        </>
                       )}
                     </button>
                   </div>
@@ -2172,16 +2160,14 @@ function MasonryModal({ item, onClose, onUpload, isUploading }) {
             </div>
           ) : (
             /* Empty State */
-            <div className="py-12 flex flex-col items-center justify-center text-center gap-3">
-              <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-500 shadow-inner">
-                <ImageIcon className="w-8 h-8 opacity-60" />
+            <div className="masonry-empty-state">
+              <div className="masonry-empty-icon">
+                <ImageIcon style={{ width: '28px', height: '28px' }} />
               </div>
-              <div>
-                <p className="text-sm font-semibold text-slate-300">No hay imágenes en este elemento</p>
-                <p className="text-xs text-slate-500 max-w-sm mt-1">
-                  Sube capturas de pantalla, diagramas o mockups para mantener documentado este requerimiento.
-                </p>
-              </div>
+              <p className="masonry-empty-title">No hay imágenes en este elemento</p>
+              <p className="masonry-empty-subtitle">
+                Sube capturas de pantalla, diagramas o mockups para mantener documentado este requerimiento.
+              </p>
             </div>
           )}
         </div>
@@ -2190,29 +2176,30 @@ function MasonryModal({ item, onClose, onUpload, isUploading }) {
       {/* Fullscreen Lightbox Modal */}
       {lightboxImg && (
         <div
-          className="fixed inset-0 z-[100000] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 animate-fade-in"
+          className="lightbox-overlay"
           onClick={() => setLightboxImg(null)}
         >
-          <div className="relative max-w-5xl max-h-[90vh] flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
+          <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
             <img
               src={lightboxImg.url}
               alt={lightboxImg.filename}
-              className="max-w-full max-h-[82vh] object-contain rounded-xl shadow-2xl border border-white/10"
+              className="lightbox-image"
             />
-            <div className="mt-3 flex items-center justify-between w-full px-2 text-slate-300 text-xs">
-              <span className="font-medium truncate max-w-md">{lightboxImg.filename}</span>
-              <div className="flex items-center gap-3">
+            <div className="lightbox-bar">
+              <span className="lightbox-filename">{lightboxImg.filename}</span>
+              <div className="lightbox-actions">
                 <a
                   href={lightboxImg.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-cyan-400 flex items-center gap-1"
+                  className="lightbox-link-btn"
                 >
-                  <ExternalLink className="w-3.5 h-3.5" /> Abrir original
+                  <ExternalLink style={{ width: '14px', height: '14px' }} /> Abrir original
                 </a>
                 <button
+                  type="button"
                   onClick={() => setLightboxImg(null)}
-                  className="px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold transition-colors"
+                  className="lightbox-close-btn"
                 >
                   Cerrar
                 </button>
