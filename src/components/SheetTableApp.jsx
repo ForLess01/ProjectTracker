@@ -2007,16 +2007,6 @@ function MasonryModal({ item, onClose, onUpload, isUploading }) {
           </div>
 
           <div className="masonry-modal-actions">
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading}
-              className="masonry-upload-btn"
-            >
-              <Upload style={{ width: '14px', height: '14px' }} />
-              <span>{isUploading ? 'Subiendo...' : 'Subir Imagen'}</span>
-            </button>
-
             <input
               ref={fileInputRef}
               type="file"

@@ -1568,9 +1568,9 @@ table.sheet-table td img:not(.assignee-avatar-img):not(.assignee-popover-avatar)
   align-items: center !important;
   justify-content: center !important;
   padding: 2rem 1.5rem !important;
-  background: rgba(0, 0, 0, 0.78) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
+  background: rgba(10, 7, 24, 0.25) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
   animation: modalFadeIn 0.2s ease-out !important;
 }
 
@@ -1582,15 +1582,18 @@ table.sheet-table td img:not(.assignee-avatar-img):not(.assignee-popover-avatar)
 .masonry-modal-card {
   position: relative !important;
   width: 100% !important;
-  max-width: 56rem !important;
+  max-width: 58rem !important;
   max-height: 85vh !important;
   margin: auto !important;
   display: flex !important;
   flex-direction: column !important;
-  border-radius: 1.25rem !important;
-  background-color: rgba(20, 15, 45, 0.96) !important;
-  border: 1px solid rgba(255, 255, 255, 0.16) !important;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(63, 136, 197, 0.15) !important;
+  border-radius: 1.5rem !important;
+  background: linear-gradient(135deg, rgba(26, 19, 58, 0.72) 0%, rgba(13, 9, 32, 0.82) 100%) !important;
+  backdrop-filter: blur(32px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 35px 80px rgba(0, 0, 0, 0.65), 0 0 50px rgba(63, 136, 197, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.3) !important;
   overflow: hidden !important;
 }
 
@@ -1598,9 +1601,9 @@ table.sheet-table td img:not(.assignee-avatar-img):not(.assignee-popover-avatar)
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  padding: 1.15rem 1.5rem !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-  background-color: rgba(255, 255, 255, 0.02) !important;
+  padding: 1.25rem 1.75rem !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
   gap: 1rem !important;
 }
 
@@ -1645,7 +1648,7 @@ table.sheet-table td img:not(.assignee-avatar-img):not(.assignee-popover-avatar)
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
-  max-width: 32rem !important;
+  max-width: 36rem !important;
 }
 
 .masonry-modal-actions {
@@ -1655,52 +1658,31 @@ table.sheet-table td img:not(.assignee-avatar-img):not(.assignee-popover-avatar)
   flex-shrink: 0 !important;
 }
 
-.masonry-upload-btn {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 0.4rem !important;
-  padding: 0.45rem 0.95rem !important;
-  border-radius: 0.75rem !important;
-  font-size: 0.78rem !important;
-  font-weight: 700 !important;
-  color: #ffffff !important;
-  background: linear-gradient(135deg, #3f88c5, #3273a8) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  box-shadow: 0 4px 14px rgba(63, 136, 197, 0.4) !important;
-  cursor: pointer !important;
-  transition: all 0.2s ease !important;
-}
-
-.masonry-upload-btn:hover {
-  transform: translateY(-1px) !important;
-  box-shadow: 0 6px 20px rgba(63, 136, 197, 0.6) !important;
-  filter: brightness(1.1) !important;
-}
-
 .masonry-close-btn {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 2.1rem !important;
-  height: 2.1rem !important;
+  width: 2.2rem !important;
+  height: 2.2rem !important;
   border-radius: 0.75rem !important;
   color: #94a3b8 !important;
-  background: rgba(255, 255, 255, 0.05) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
   cursor: pointer !important;
   transition: all 0.2s ease !important;
 }
 
 .masonry-close-btn:hover {
   color: #ffffff !important;
-  background: rgba(255, 255, 255, 0.15) !important;
-  border-color: rgba(255, 255, 255, 0.25) !important;
+  background: rgba(255, 255, 255, 0.18) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  transform: scale(1.05) !important;
 }
 
 .masonry-modal-body {
   flex: 1 !important;
   overflow-y: auto !important;
-  padding: 1.5rem !important;
+  padding: 1.75rem !important;
   display: flex !important;
   flex-direction: column !important;
   gap: 1.5rem !important;
@@ -1714,31 +1696,33 @@ table.sheet-table td img:not(.assignee-avatar-img):not(.assignee-popover-avatar)
   justify-content: center !important;
   text-align: center !important;
   gap: 0.6rem !important;
-  padding: 1.35rem 1rem !important;
-  border-radius: 1rem !important;
-  border: 2px dashed rgba(255, 255, 255, 0.16) !important;
-  background: rgba(255, 255, 255, 0.02) !important;
+  padding: 1.5rem 1.25rem !important;
+  border-radius: 1.15rem !important;
+  border: 2px dashed rgba(255, 255, 255, 0.18) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  backdrop-filter: blur(12px) !important;
   cursor: pointer !important;
   transition: all 0.2s ease !important;
 }
 
 .masonry-dropzone:hover {
-  border-color: rgba(56, 189, 248, 0.5) !important;
-  background: rgba(56, 189, 248, 0.04) !important;
+  border-color: rgba(56, 189, 248, 0.6) !important;
+  background: rgba(56, 189, 248, 0.06) !important;
+  box-shadow: 0 0 25px rgba(56, 189, 248, 0.15) !important;
 }
 
 .masonry-dropzone.is-drag-active {
   border-color: #38bdf8 !important;
-  background: rgba(56, 189, 248, 0.12) !important;
-  box-shadow: 0 0 24px rgba(56, 189, 248, 0.25) !important;
+  background: rgba(56, 189, 248, 0.14) !important;
+  box-shadow: 0 0 30px rgba(56, 189, 248, 0.3) !important;
 }
 
 .masonry-dropzone-icon {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 2.5rem !important;
-  height: 2.5rem !important;
+  width: 2.6rem !important;
+  height: 2.6rem !important;
   border-radius: 9999px !important;
   background: rgba(56, 189, 248, 0.15) !important;
   color: #38bdf8 !important;
@@ -1746,70 +1730,88 @@ table.sheet-table td img:not(.assignee-avatar-img):not(.assignee-popover-avatar)
 }
 
 .masonry-dropzone-title {
-  font-size: 0.825rem !important;
+  font-size: 0.85rem !important;
   font-weight: 600 !important;
   color: #ffffff !important;
   margin: 0 !important;
 }
 
 .masonry-dropzone-subtitle {
-  font-size: 0.725rem !important;
+  font-size: 0.75rem !important;
   color: #94a3b8 !important;
   margin: 0.15rem 0 0 0 !important;
 }
 
 .masonry-dropzone-kbd {
   display: inline-block !important;
-  padding: 0.1rem 0.35rem !important;
-  background: rgba(255, 255, 255, 0.1) !important;
-  border-radius: 0.3rem !important;
+  padding: 0.1rem 0.4rem !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-radius: 0.35rem !important;
   font-family: monospace !important;
-  font-size: 0.68rem !important;
-  color: #cbd5e1 !important;
+  font-size: 0.7rem !important;
+  color: #e2e8f0 !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
 }
 
-/* GRID CONTAINER */
+/* PINTEREST-STYLE MASONRY GRID (CSS MULTI-COLUMN) */
 .masonry-grid-container {
-  display: grid !important;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)) !important;
-  gap: 1.25rem !important;
+  column-count: 3 !important;
+  column-gap: 1.25rem !important;
+  width: 100% !important;
+}
+
+@media (max-width: 860px) {
+  .masonry-grid-container {
+    column-count: 2 !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .masonry-grid-container {
+    column-count: 1 !important;
+  }
 }
 
 .masonry-item-card {
-  display: flex !important;
-  flex-direction: column !important;
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+  margin-bottom: 1.25rem !important;
+  display: inline-block !important;
+  width: 100% !important;
   border-radius: 1rem !important;
-  background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.22) !important;
   overflow: hidden !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
-  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35) !important;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease !important;
 }
 
 .masonry-item-card:hover {
-  transform: translateY(-3px) !important;
-  border-color: rgba(56, 189, 248, 0.5) !important;
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(56, 189, 248, 0.2) !important;
+  transform: translateY(-4px) !important;
+  border-color: rgba(56, 189, 248, 0.6) !important;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5), 0 0 25px rgba(56, 189, 248, 0.25) !important;
 }
 
 .masonry-item-media-wrap {
   position: relative !important;
   width: 100% !important;
-  height: 160px !important;
-  background: #0b0819 !important;
+  height: auto !important;
+  background: rgba(10, 7, 24, 0.6) !important;
   overflow: hidden !important;
   cursor: pointer !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+  display: block !important;
 }
 
 .masonry-item-image {
   width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  transition: transform 0.4s ease !important;
-  max-width: none !important;
+  height: auto !important;
+  display: block !important;
+  object-fit: contain !important;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  max-width: 100% !important;
   max-height: none !important;
   border-radius: 0 !important;
   border: none !important;
@@ -1817,7 +1819,7 @@ table.sheet-table td img:not(.assignee-avatar-img):not(.assignee-popover-avatar)
 }
 
 .masonry-item-card:hover .masonry-item-image {
-  transform: scale(1.06) !important;
+  transform: scale(1.04) !important;
 }
 
 .masonry-item-badge {
@@ -1880,8 +1882,8 @@ table.sheet-table td img:not(.assignee-avatar-img):not(.assignee-popover-avatar)
   justify-content: space-between !important;
   gap: 0.5rem !important;
   padding: 0.75rem 1rem !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
-  background: rgba(255, 255, 255, 0.015) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(15, 10, 32, 0.5) !important;
 }
 
 .masonry-item-filename {
