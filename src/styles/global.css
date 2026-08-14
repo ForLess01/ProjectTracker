@@ -1850,18 +1850,23 @@ table.sheet-table td img:not(.assignee-avatar-img):not(.assignee-popover-avatar)
   position: relative !important;
   width: 100% !important;
   height: auto !important;
-  min-height: 0 !important;
-  background: transparent !important;
+  min-height: 120px !important;
+  background: rgba(10, 7, 24, 0.4) !important;
   overflow: hidden !important;
   cursor: pointer !important;
-  display: block !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   line-height: 0 !important;
   font-size: 0 !important;
 }
 
 .masonry-item-image {
   width: 100% !important;
-  height: auto !important;
+  height: 100% !important;
+  min-height: 120px !important;
+  object-fit: cover !important;
+  object-position: center !important;
   display: block !important;
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
   max-width: 100% !important;
@@ -1875,7 +1880,7 @@ table.sheet-table td img:not(.assignee-avatar-img):not(.assignee-popover-avatar)
 }
 
 .masonry-item-card:hover .masonry-item-image {
-  transform: scale(1.04) !important;
+  transform: scale(1.05) !important;
 }
 
 .masonry-item-badge {
@@ -1896,13 +1901,14 @@ table.sheet-table td img:not(.assignee-avatar-img):not(.assignee-popover-avatar)
 .masonry-item-overlay {
   position: absolute !important;
   inset: 0 !important;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.2) 60%, transparent 100%) !important;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.35) 50%, rgba(0, 0, 0, 0.15) 100%) !important;
   opacity: 0 !important;
   transition: opacity 0.2s ease !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   gap: 0.5rem !important;
+  padding: 0.5rem !important;
   z-index: 6 !important;
 }
 
