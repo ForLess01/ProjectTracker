@@ -1929,6 +1929,13 @@ table.sheet-table td img:not(.assignee-avatar-img):not(.assignee-popover-avatar)
   border-color: #38bdf8 !important;
 }
 
+.masonry-overlay-btn.masonry-overlay-delete-btn:hover {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.5) !important;
+}
+
 .masonry-item-footer {
   display: flex !important;
   align-items: center !important;

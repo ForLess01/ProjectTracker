@@ -764,6 +764,28 @@ export default function SheetTableApp({
     }
   };
 
+  // Attachment Delete Handler
+  const deleteAttachment = async (itemId, attachmentId) => {
+    // Optimistic delete
+    setItems((prev) =>
+      prev.map((item) => {
+        if (item.id === itemId) {
+          const current = (item.attachments || []).filter((att) => att.id !== attachmentId);
+          return { ...item, attachments: current };
+        }
+        return item;
+      })
+    );
+
+    try {
+      if (typeof attachmentId === 'string' && !attachmentId.startsWith('temp-')) {
+        await fetch(`/api/attachments/${attachmentId}`, { method: 'DELETE' });
+      }
+    } catch (err) {
+      console.error('Error deleting attachment:', err);
+    }
+  };
+
   // Image Upload Handler
   const uploadImage = async (itemId, file) => {
     if (!file) return;
@@ -778,7 +800,7 @@ export default function SheetTableApp({
       mimeType: file.type || 'image/png',
     };
 
-    // Optimistically insert temp attachment so thumbnail displays instantly without broken icon
+    // Optimistically insert temp attachment so thumbnail displays instantly
     setItems((prev) =>
       prev.map((item) => {
         if (item.id === itemId) {
@@ -803,32 +825,18 @@ export default function SheetTableApp({
         const data = await res.json();
         const serverAtt = data.attachment;
 
-        // Preload server URL in background before swapping out temp object URL
-        const imgPreload = new Image();
-        imgPreload.src = serverAtt.url;
-
-        const updateItemWithServerAtt = (finalAtt) => {
-          setItems((prev) =>
-            prev.map((item) => {
-              if (item.id === itemId) {
-                const current = (item.attachments || []).map((att) =>
-                  att.id === tempAttachment.id ? finalAtt : att
-                );
-                return { ...item, attachments: current };
-              }
-              return item;
-            })
-          );
-        };
-
-        imgPreload.onload = () => {
-          updateItemWithServerAtt(serverAtt);
-        };
-        imgPreload.onerror = () => {
-          // If dev server static file indexing is delayed, append cache-busting query
-          const retryAtt = { ...serverAtt, url: `${serverAtt.url}?t=${Date.now()}` };
-          updateItemWithServerAtt(retryAtt);
-        };
+        // Immediately update with server attachment
+        setItems((prev) =>
+          prev.map((item) => {
+            if (item.id === itemId) {
+              const current = (item.attachments || []).map((att) =>
+                att.id === tempAttachment.id ? serverAtt : att
+              );
+              return { ...item, attachments: current };
+            }
+            return item;
+          })
+        );
       } else {
         throw new Error('Upload failed');
       }
@@ -1517,6 +1525,7 @@ export default function SheetTableApp({
           item={items.find((it) => it.id === activeMasonryItem.id) || activeMasonryItem}
           onClose={() => setActiveMasonryItem(null)}
           onUpload={(file) => uploadImage(activeMasonryItem.id, file)}
+          onDeleteAttachment={(attId) => deleteAttachment(activeMasonryItem.id, attId)}
           isUploading={uploadingItemId === activeMasonryItem.id}
         />
       )}
@@ -1908,7 +1917,7 @@ function AssigneeCell({ item, users, onSelect, style }) {
   );
 }
 
-function MasonryModal({ item, onClose, onUpload, isUploading }) {
+function MasonryModal({ item, onClose, onUpload, onDeleteAttachment, isUploading }) {
   const fileInputRef = useRef(null);
   const dragCounterRef = useRef(0);
   const [isDragActive, setIsDragActive] = useState(false);
@@ -2167,6 +2176,20 @@ function MasonryModal({ item, onClose, onUpload, isUploading }) {
                             ) : (
                               <Copy style={{ width: '16px', height: '16px' }} />
                             )}
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (confirm('¿Deseas eliminar esta imagen?')) {
+                                onDeleteAttachment?.(att.id || att.url);
+                              }
+                            }}
+                            className="masonry-overlay-btn masonry-overlay-delete-btn"
+                            title="Eliminar imagen"
+                          >
+                            <Trash2 style={{ width: '15px', height: '15px' }} />
                           </button>
                         </div>
 
