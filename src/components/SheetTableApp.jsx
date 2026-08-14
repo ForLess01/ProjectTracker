@@ -1989,6 +1989,26 @@ function MasonryModal({ item, onClose, onUpload, isUploading }) {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  const [colCount, setColCount] = useState(3);
+
+  useEffect(() => {
+    const updateColCount = () => {
+      if (typeof window !== 'undefined') {
+        if (window.innerWidth < 560) setColCount(1);
+        else if (window.innerWidth < 900) setColCount(2);
+        else setColCount(3);
+      }
+    };
+    updateColCount();
+    window.addEventListener('resize', updateColCount);
+    return () => window.removeEventListener('resize', updateColCount);
+  }, []);
+
+  const columns = Array.from({ length: colCount }, () => []);
+  attachments.forEach((att, idx) => {
+    columns[idx % colCount].push({ item: att, index: idx });
+  });
+
   const modalContent = (
     <div className="masonry-modal-overlay" onClick={onClose}>
       <div className="masonry-modal-card" onClick={(e) => e.stopPropagation()}>
@@ -2054,97 +2074,102 @@ function MasonryModal({ item, onClose, onUpload, isUploading }) {
           {/* Masonry / Gallery Grid */}
           {attachments.length > 0 ? (
             <div className="masonry-grid-container">
-              {attachments.map((att, idx) => (
-                <div key={att.id || idx} className="masonry-item-card">
-                  {/* Thumbnail Image Container */}
-                  <div
-                    className="masonry-item-media-wrap"
-                    onClick={() => setLightboxImg(att)}
-                  >
-                    <img
-                      src={att.url}
-                      alt={att.filename || `Imagen ${idx + 1}`}
-                      className="masonry-item-image"
-                      onError={(e) => {
-                        if (!e.currentTarget.dataset.retried) {
-                          e.currentTarget.dataset.retried = 'true';
-                          e.currentTarget.src = att.url.includes('?') ? att.url : `${att.url}?t=${Date.now()}`;
-                        }
-                      }}
-                    />
-
-                    {/* Image Overlay with Quick Action Buttons */}
-                    <div className="masonry-item-overlay">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setLightboxImg(att);
-                        }}
-                        className="masonry-overlay-btn"
-                        title="Ver en pantalla completa"
+              {columns.map((col, colIdx) => (
+                <div key={colIdx} className="masonry-column">
+                  {col.map(({ item: att, index: idx }) => (
+                    <div key={att.id || idx} className="masonry-item-card">
+                      {/* Thumbnail Image Container */}
+                      <div
+                        className="masonry-item-media-wrap"
+                        onClick={() => setLightboxImg(att)}
                       >
-                        <ZoomIn style={{ width: '16px', height: '16px' }} />
-                      </button>
+                        <img
+                          src={att.url}
+                          alt={att.filename || `Imagen ${idx + 1}`}
+                          className="masonry-item-image"
+                          loading="eager"
+                          onError={(e) => {
+                            if (!e.currentTarget.dataset.retried) {
+                              e.currentTarget.dataset.retried = 'true';
+                              e.currentTarget.src = att.url.includes('?') ? att.url : `${att.url}?t=${Date.now()}`;
+                            }
+                          }}
+                        />
 
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          window.open(att.url, '_blank');
-                        }}
-                        className="masonry-overlay-btn"
-                        title="Abrir en pestaña nueva"
-                      >
-                        <ExternalLink style={{ width: '16px', height: '16px' }} />
-                      </button>
+                        {/* Image Overlay with Quick Action Buttons */}
+                        <div className="masonry-item-overlay">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setLightboxImg(att);
+                            }}
+                            className="masonry-overlay-btn"
+                            title="Ver en pantalla completa"
+                          >
+                            <ZoomIn style={{ width: '16px', height: '16px' }} />
+                          </button>
 
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleCopyLink(att);
-                        }}
-                        className="masonry-overlay-btn"
-                        title="Copiar enlace"
-                      >
-                        {copiedId === (att.id || att.url) ? (
-                          <Check style={{ width: '16px', height: '16px', color: '#34d399' }} />
-                        ) : (
-                          <Copy style={{ width: '16px', height: '16px' }} />
-                        )}
-                      </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              window.open(att.url, '_blank');
+                            }}
+                            className="masonry-overlay-btn"
+                            title="Abrir en pestaña nueva"
+                          >
+                            <ExternalLink style={{ width: '16px', height: '16px' }} />
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCopyLink(att);
+                            }}
+                            className="masonry-overlay-btn"
+                            title="Copiar enlace"
+                          >
+                            {copiedId === (att.id || att.url) ? (
+                              <Check style={{ width: '16px', height: '16px', color: '#34d399' }} />
+                            ) : (
+                              <Copy style={{ width: '16px', height: '16px' }} />
+                            )}
+                          </button>
+                        </div>
+
+                        {/* Counter Badge */}
+                        <div className="masonry-item-badge">
+                          #{idx + 1}
+                        </div>
+                      </div>
+
+                      {/* Card Caption / Meta Footer */}
+                      <div className="masonry-item-footer">
+                        <p className="masonry-item-filename" title={att.filename}>
+                          {att.filename || `captura_${idx + 1}.png`}
+                        </p>
+
+                        <button
+                          type="button"
+                          onClick={() => handleCopyLink(att)}
+                          className={`masonry-item-copy-btn ${copiedId === (att.id || att.url) ? 'is-copied' : ''}`}
+                          title="Copiar enlace"
+                        >
+                          {copiedId === (att.id || att.url) ? (
+                            <>
+                              <Check style={{ width: '12px', height: '12px' }} /> Copiado
+                            </>
+                          ) : (
+                            <>
+                              <Copy style={{ width: '12px', height: '12px' }} /> Copiar
+                            </>
+                          )}
+                        </button>
+                      </div>
                     </div>
-
-                    {/* Counter Badge */}
-                    <div className="masonry-item-badge">
-                      #{idx + 1}
-                    </div>
-                  </div>
-
-                  {/* Card Caption / Meta Footer */}
-                  <div className="masonry-item-footer">
-                    <p className="masonry-item-filename" title={att.filename}>
-                      {att.filename || `captura_${idx + 1}.png`}
-                    </p>
-
-                    <button
-                      type="button"
-                      onClick={() => handleCopyLink(att)}
-                      className={`masonry-item-copy-btn ${copiedId === (att.id || att.url) ? 'is-copied' : ''}`}
-                      title="Copiar enlace"
-                    >
-                      {copiedId === (att.id || att.url) ? (
-                        <>
-                          <Check style={{ width: '12px', height: '12px' }} /> Copiado
-                        </>
-                      ) : (
-                        <>
-                          <Copy style={{ width: '12px', height: '12px' }} /> Copiar
-                        </>
-                      )}
-                    </button>
-                  </div>
+                  ))}
                 </div>
               ))}
             </div>

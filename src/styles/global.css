@@ -1753,37 +1753,32 @@ table.sheet-table td img:not(.assignee-avatar-img):not(.assignee-popover-avatar)
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
 }
 
-/* PINTEREST-STYLE MASONRY GRID (CSS MULTI-COLUMN) */
+/* PINTEREST-STYLE MASONRY GRID (FLEX COLUMNS) */
 .masonry-grid-container {
-  column-count: 3 !important;
-  column-gap: 1.25rem !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 1.25rem !important;
   width: 100% !important;
 }
 
-@media (max-width: 860px) {
-  .masonry-grid-container {
-    column-count: 2 !important;
-  }
-}
-
-@media (max-width: 520px) {
-  .masonry-grid-container {
-    column-count: 1 !important;
-  }
+.masonry-column {
+  flex: 1 1 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1.25rem !important;
+  min-width: 0 !important;
 }
 
 .masonry-item-card {
-  break-inside: avoid !important;
-  page-break-inside: avoid !important;
-  margin-bottom: 1.25rem !important;
-  display: inline-block !important;
+  display: flex !important;
+  flex-direction: column !important;
   width: 100% !important;
-  border-radius: 1rem !important;
+  border-radius: 1.1rem !important;
   background: rgba(255, 255, 255, 0.04) !important;
   backdrop-filter: blur(16px) !important;
   -webkit-backdrop-filter: blur(16px) !important;
   border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.22) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.24) !important;
   overflow: hidden !important;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35) !important;
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease !important;
@@ -1799,6 +1794,7 @@ table.sheet-table td img:not(.assignee-avatar-img):not(.assignee-popover-avatar)
   position: relative !important;
   width: 100% !important;
   height: auto !important;
+  min-height: 100px !important;
   background: rgba(10, 7, 24, 0.6) !important;
   overflow: hidden !important;
   cursor: pointer !important;
