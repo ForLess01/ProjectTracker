@@ -1989,7 +1989,7 @@ function MasonryModal({ item, onClose, onUpload, isUploading }) {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  return (
+  const modalContent = (
     <div className="masonry-modal-overlay" onClick={onClose}>
       <div className="masonry-modal-card" onClick={(e) => e.stopPropagation()}>
         {/* Modal Header */}
@@ -2056,7 +2056,7 @@ function MasonryModal({ item, onClose, onUpload, isUploading }) {
                 {isUploading ? 'Subiendo archivo...' : 'Arrastra y suelta imágenes aquí, o haz clic para explorar'}
               </p>
               <p className="masonry-dropzone-subtitle">
-                Soporta PNG, JPG, WebP y pegado directo desde el portapapeles (<span className="masonry-dropzone-kbd">Ctrl+V</span>)
+                Soporta PNG, JPG, WebP y pegado directo desde el portapapeles (<span className="masonry-dropzone-kbd">Ctrl+V / ⌘+V</span>)
               </p>
             </div>
           </div>
@@ -2210,4 +2210,9 @@ function MasonryModal({ item, onClose, onUpload, isUploading }) {
       )}
     </div>
   );
+
+  if (typeof document !== 'undefined') {
+    return createPortal(modalContent, document.body);
+  }
+  return modalContent;
 }
