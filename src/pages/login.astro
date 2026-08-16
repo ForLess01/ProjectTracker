@@ -20,6 +20,7 @@ if (errorParam === 'google_config_missing') {
 
 <html lang="es">
   <head>
+    <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
     <link rel="shortcut icon" href="/favicon.svg?v=2" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -43,7 +44,9 @@ if (errorParam === 'google_config_missing') {
       <div class="gradient-bg-content auth-card">
         
         <div class="auth-header">
-          <LogoMinimal size="lg" />
+          <a href="/" class="auth-logo-link" title="Volver a la página principal">
+            <LogoMinimal size="lg" />
+          </a>
           <h2 class="auth-title">Bienvenido de nuevo</h2>
           <p class="auth-subtitle">Ingresa tus credenciales para acceder al sistema</p>
         </div>
@@ -66,6 +69,7 @@ if (errorParam === 'google_config_missing') {
         <div class="divider-box">
           <div class="divider-line"></div>
           <span class="divider-text">o con correo</span>
+          <div class="divider-line"></div>
         </div>
 
         <form id="login-form" class="auth-form">
@@ -119,6 +123,18 @@ if (errorParam === 'google_config_missing') {
         margin-bottom: 1.5rem;
       }
 
+      .auth-logo-link {
+        display: inline-flex;
+        text-decoration: none;
+        transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+        cursor: pointer;
+      }
+
+      .auth-logo-link:hover {
+        transform: scale(1.04);
+        opacity: 0.92;
+      }
+
       .auth-title {
         font-size: 1.5rem;
         font-weight: 800;
@@ -161,7 +177,8 @@ if (errorParam === 'google_config_missing') {
         color: #e2e8f0;
         background-color: rgba(255, 255, 255, 0.05);
         border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 0.75rem;
+        border-radius: 1.45rem;
+        corner-shape: squircle;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         transition: all 0.2s ease;
       }
@@ -176,28 +193,28 @@ if (errorParam === 'google_config_missing') {
       }
 
       .divider-box {
-        position: relative;
         display: flex;
         align-items: center;
-        justify-content: center;
+        gap: 0.75rem;
         margin-bottom: 1.25rem;
+        width: 100%;
       }
 
       .divider-line {
-        width: 100%;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        flex: 1;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.1);
       }
 
       .divider-text {
-        position: absolute;
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
-        background-color: #140f2d;
         font-size: 0.6875rem;
         color: #64748b;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         font-weight: 600;
+        white-space: nowrap;
+        background: transparent;
+        padding: 0;
       }
 
       .auth-form {

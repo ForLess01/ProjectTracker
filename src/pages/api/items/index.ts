@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { db } from '../../../db';
 import { items, users } from '../../../db/schema';
-import { eq, desc } from 'drizzle-orm';
+import { eq, asc } from 'drizzle-orm';
 
 export const GET: APIRoute = async ({ url, locals }) => {
   if (!locals.user) {
@@ -13,7 +13,7 @@ export const GET: APIRoute = async ({ url, locals }) => {
   try {
     const itemList = await db.query.items.findMany({
       where: eq(items.viewType, viewType),
-      orderBy: [desc(items.createdAt)],
+      orderBy: [asc(items.createdAt)],
       with: {
         creator: true,
         assignee: true,
@@ -47,10 +47,39 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   try {
     const body = await request.json();
-    const { viewType, title } = body;
 
-    if (!viewType || !title) {
-      return new Response(JSON.stringify({ error: 'El título y el tipo de vista son requeridos.' }), { status: 400 });
+    // Batch insertion support
+    if (Array.isArray(body.items) && body.items.length > 0) {
+      const defaultViewType = body.viewType || 'ideas';
+      const itemsToInsert = body.items.map((it: any) => ({
+        viewType: (it.viewType || defaultViewType) as 'ideas' | 'bugs' | 'optimizaciones' | 'implementaciones',
+        title: it.title || 'Nueva Fila',
+        context: it.context || '',
+        location: it.location || '',
+        severity: it.severity || 'Media',
+        impact: it.impact || 'Medio',
+        effort: it.effort || 'Medio',
+        priority: it.priority || 'P2',
+        sprint: it.sprint || 'Sprint 1',
+        status: it.status || 'backlog',
+        notes: it.notes || '',
+        creatorId: locals.user.id,
+        assigneeId: it.assigneeId || null,
+      }));
+
+      const createdItems = await db.insert(items).values(itemsToInsert).returning();
+
+      return new Response(JSON.stringify({ items: createdItems, count: createdItems.length }), {
+        status: 201,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const { viewType } = body;
+    const title = typeof body.title === 'string' ? body.title : '';
+
+    if (!viewType) {
+      return new Response(JSON.stringify({ error: 'El tipo de vista es requerido.' }), { status: 400 });
     }
 
     const [newItem] = await db.insert(items).values({
@@ -63,10 +92,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
       effort: body.effort || 'Medio',
       priority: body.priority || 'P2',
       sprint: body.sprint || 'Sprint 1',
-      status: 'backlog',
+      status: body.status || 'backlog',
       notes: body.notes || '',
       creatorId: locals.user.id,
-      assigneeId: body.assigneeId || locals.user.id,
+      assigneeId: body.assigneeId || null,
     }).returning();
 
     return new Response(JSON.stringify({ item: newItem }), {
@@ -78,3 +107,4 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return new Response(JSON.stringify({ error: 'Error al crear elemento' }), { status: 500 });
   }
 };
+

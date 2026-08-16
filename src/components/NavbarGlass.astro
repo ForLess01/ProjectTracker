@@ -4,6 +4,7 @@ import LogoMinimal from './LogoMinimal.astro';
 interface Props {
   currentView?: string;
   projectName?: string;
+  projectId?: string;
   teamName?: string;
   user?: {
     name: string;
@@ -12,7 +13,7 @@ interface Props {
   } | null;
 }
 
-const { currentView = 'hub', projectName = 'proj-1', teamName = 'Engineering Team', user } = Astro.props;
+const { currentView = 'hub', projectName = 'ProjectTracker Core', projectId = 'core', teamName = 'Engineering Team', user } = Astro.props;
 
 const isHub = currentView === 'hub';
 
@@ -58,7 +59,7 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
             const isActive = currentView === v.id;
             return (
               <a
-                href={`/app?view=${v.id}`}
+                href={`/app?project=${projectId}&view=${v.id}`}
                 class={`nav-tab ${isActive ? 'active' : ''} nav-tab-${v.id}`}
                 title={v.label}
               >
@@ -105,14 +106,14 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
             );
           })}
 
-          <button type="button" class="nav-tab nav-tab-add" id="btn-add-section-nav" title="Añadir nueva sección o hoja">
+          <button type="button" class="nav-tab nav-tab-add" id="btn-add-section-nav" title="A&ntilde;adir nueva secci&oacute;n u hoja">
             <div class="nav-icon-pill icon-pill-add">
               <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19" />
                 <line x1="5" y1="12" x2="19" y2="12" />
               </svg>
             </div>
-            <span class="tab-label">Nueva Sección</span>
+            <span class="tab-label">Nueva Secci&oacute;n</span>
           </button>
         </nav>
       )}
@@ -496,6 +497,103 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
             </div>
           </div>
 
+          <!-- Create New Section Modal (Glass Modal) -->
+          <div class="notif-modal-backdrop" id="new-section-modal" style="display: none;">
+            <div class="notif-modal-container section-modal-container">
+              <!-- Modal Header -->
+              <div class="notif-modal-header">
+                <div class="notif-modal-title-group">
+                  <div class="notif-modal-icon-badge section-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                      <line x1="12" y1="5" x2="12" y2="19" />
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 class="notif-modal-title">A&ntilde;adir Nueva Secci&oacute;n u Hoja</h2>
+                    <p class="notif-modal-subtitle">Selecciona una plantilla de flujo de trabajo para este proyecto</p>
+                  </div>
+                </div>
+                <button type="button" class="notif-modal-close-btn" id="btn-close-section-modal" title="Cerrar modal" aria-label="Cerrar modal">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </div>
+
+              <!-- Modal Body: Section Template Picker -->
+              <div class="section-modal-body">
+                <label class="section-modal-label">Selecciona la plantilla de hoja a abrir o gestionar:</label>
+                <div class="section-templates-grid">
+                  <!-- Template 1: Ideas -->
+                  <div class="section-template-card is-selected" data-view-type="ideas">
+                    <div class="template-card-icon text-[#f49d37]">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7z"/></svg>
+                    </div>
+                    <div class="template-card-info">
+                      <h4 class="template-card-title">Hojas de Ideas</h4>
+                      <p class="template-card-desc">Lluvia de ideas, propuestas de producto, contexto y &aacute;reas de aplicaci&oacute;n.</p>
+                    </div>
+                    <div class="template-radio-check"></div>
+                  </div>
+
+                  <!-- Template 2: Bugs -->
+                  <div class="section-template-card" data-view-type="bugs">
+                    <div class="template-card-icon text-[#d72638]">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect width="8" height="12" x="8" rx="4" />
+                        <path d="m19 7-3 2" />
+                        <path d="m5 7 3 2" />
+                        <path d="m19 19-3-2" />
+                        <path d="m5 19 3-2" />
+                        <path d="M20 13h-4" />
+                        <path d="M4 13h4" />
+                        <path d="M10 4.5 9 3" />
+                        <path d="M14 4.5 15 3" />
+                      </svg>
+                    </div>
+                    <div class="template-card-info">
+                      <h4 class="template-card-title">Bugs y Problemas</h4>
+                      <p class="template-card-desc">Registro de incidencias t&eacute;cnicas, severidad, m&oacute;dulos afectados y capturas.</p>
+                    </div>
+                    <div class="template-radio-check"></div>
+                  </div>
+
+                  <!-- Template 3: Optimizaciones -->
+                  <div class="section-template-card" data-view-type="optimizaciones">
+                    <div class="template-card-icon text-[#3f88c5]">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    </div>
+                    <div class="template-card-info">
+                      <h4 class="template-card-title">Optimizaciones</h4>
+                      <p class="template-card-desc">Mejoras de rendimiento y arquitectura clasificadas por impacto y esfuerzo.</p>
+                    </div>
+                    <div class="template-radio-check"></div>
+                  </div>
+
+                  <!-- Template 4: Implementaciones -->
+                  <div class="section-template-card" data-view-type="implementaciones">
+                    <div class="template-card-icon text-purple-400">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg>
+                    </div>
+                    <div class="template-card-info">
+                      <h4 class="template-card-title">Implementaciones</h4>
+                      <p class="template-card-desc">Nuevas funcionalidades estructuradas por Sprint y prioridad de entrega (P1-P3).</p>
+                    </div>
+                    <div class="template-radio-check"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Modal Footer -->
+              <div class="notif-modal-footer">
+                <button type="button" class="btn-modal-cancel" id="btn-cancel-section-modal">Cancelar</button>
+                <button type="button" class="btn-modal-create-section" id="btn-submit-section-modal">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="w-4 h-4"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span>Abrir Secci&oacute;n</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
           <!-- Pure Icon Logout Button with Classic Crimson hover -->
           <form action="/api/auth/logout" method="POST" class="logout-form">
             <button type="submit" class="btn-logout-icon" title="Cerrar Sesión" aria-label="Cerrar Sesión">
@@ -519,35 +617,6 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
       )}
     </div>
   </div>
-
-  <!-- Mobile Navigation Bar (Only in project workspace) -->
-  {!isHub && (
-    <div class="nav-mobile-bar">
-      {views.map((v) => {
-        const isActive = currentView === v.id;
-        return (
-          <a
-            href={`/app?view=${v.id}`}
-            class={`nav-tab-mobile ${isActive ? 'active' : ''}`}
-          >
-            {v.type === 'ideas' && (
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7z"/></svg>
-            )}
-            {v.type === 'bugs' && (
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="8" height="12" x="8" y="8" rx="4"/><path d="m19 7-3 2"/><path d="m5 7 3 2"/><path d="m19 19-3-2"/><path d="m5 19 3-2"/><path d="M20 13h-4"/><path d="M4 13h4"/></svg>
-            )}
-            {v.type === 'optimizaciones' && (
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            )}
-            {v.type === 'implementaciones' && (
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg>
-            )}
-            <span>{v.label}</span>
-          </a>
-        );
-      })}
-    </div>
-  )}
 </header>
 
 <style>
@@ -562,15 +631,17 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
   }
 
   .navbar-glass-bar {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: space-between;
+    gap: 1rem;
     padding: 0.25rem 0.5rem;
     background: transparent;
     border: none;
     box-shadow: none;
     position: relative;
     min-height: 2.75rem;
+    width: 100%;
   }
 
   .logo-link {
@@ -578,19 +649,16 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
     align-items: center;
     text-decoration: none;
     padding-left: 0.25rem;
+    flex-shrink: 0;
     z-index: 10;
   }
 
-  /* Center Slot: strictly centered horizontally and vertically in the navbar bar */
+  /* Center Slot: Natural grid element, mathematically centered between balanced left and right columns */
   .nav-center-slot {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
     display: flex;
     align-items: center;
     justify-content: center;
-    pointer-events: auto;
+    grid-column: 2;
     z-index: 5;
   }
 
@@ -619,9 +687,9 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
     to { opacity: 1; }
   }
 
-  /* Desktop Navigation Slider Container */
+  /* Responsive Navigation Slider Container (Always visible & flexible on desktop/tablet/mobile) */
   .nav-slider-desktop {
-    display: none;
+    display: flex;
     align-items: center;
     gap: 0.375rem;
     padding: 0.25rem;
@@ -630,11 +698,74 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
     background-color: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.08);
     animation: navSimpleFade 0.25s ease-out forwards;
+    max-width: 100%;
+    flex-shrink: 0;
   }
 
-  @media (min-width: 768px) {
+  @media (max-width: 1200px) {
+    .nav-project-team {
+      display: none;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .nav-project-info {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .navbar-glass-bar {
+      gap: 0.375rem;
+    }
+
     .nav-slider-desktop {
-      display: flex;
+      gap: 0.25rem;
+      padding: 0.1875rem;
+    }
+
+    .nav-icon-pill {
+      width: 1.875rem;
+      height: 1.875rem;
+    }
+
+    .nav-tab .tab-label {
+      display: none !important; /* Strictly compact icon-first on mobile touch screens */
+    }
+
+    .btn-expand-label,
+    .user-hover-name {
+      display: none !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .navbar-wrapper {
+      padding: 0.375rem 0.5rem;
+    }
+
+    .navbar-glass-bar {
+      padding: 0;
+      gap: 0.25rem;
+    }
+
+    .nav-icon-pill {
+      width: 1.625rem;
+      height: 1.625rem;
+    }
+
+    .nav-icon {
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+
+    .btn-notification-bell,
+    .btn-expandable-invite,
+    .avatar-circle,
+    .btn-logout-icon {
+      width: 1.875rem !important;
+      height: 1.875rem !important;
+      min-width: 1.875rem !important;
     }
   }
 
@@ -675,9 +806,10 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
                 margin-right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* ONLY on hover does the label reveal smoothly */
+  /* The active tab keeps its label visible, and hover expands smoothly */
+  .nav-tab.active .tab-label,
   .nav-tab:hover .tab-label {
-    max-width: 140px;
+    max-width: 160px;
     opacity: 1;
     margin-left: 0.5rem;
     margin-right: 0.375rem;
@@ -751,8 +883,10 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
   .user-auth-zone {
     display: flex;
     align-items: center;
-    gap: 0.625rem;
-    margin-left: auto;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    min-width: 0;
+    justify-self: end;
     z-index: 10;
   }
 
@@ -762,7 +896,7 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
     gap: 0.5rem;
   }
 
-  /* Expandable Invite Button in Brand Palette (Carrot Orange to Classic Crimson) */
+  /* Expandable Invite Button in Brand Palette (Carrot Orange) */
   .btn-expandable-invite {
     display: inline-flex;
     align-items: center;
@@ -774,7 +908,7 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
     font-size: 0.75rem;
     font-weight: 700;
     color: #ffffff;
-    background: linear-gradient(135deg, var(--color-carrot-orange) 0%, var(--color-classic-crimson) 100%);
+    background: var(--color-carrot-orange);
     border-radius: 0.75rem;
     border: none;
     box-shadow: 0 4px 12px rgba(244, 157, 55, 0.3);
@@ -844,6 +978,8 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    min-width: 0;
+    overflow: hidden;
   }
 
   .nav-project-info {
@@ -852,6 +988,8 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
     gap: 0.5rem;
     padding-left: 0.75rem;
     border-left: 1px solid rgba(255, 255, 255, 0.15);
+    min-width: 0;
+    overflow: hidden;
   }
 
   .nav-project-name {
@@ -861,6 +999,8 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
     color: #ffffff;
     letter-spacing: 0.025em;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .nav-project-team {
@@ -868,9 +1008,11 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
     font-weight: 500;
     color: #94a3b8;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  @media (max-width: 640px) {
+  @media (max-width: 1100px) {
     .nav-project-team {
       display: none;
     }
@@ -885,7 +1027,7 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    background: linear-gradient(135deg, var(--color-steel-blue) 0%, var(--color-midnight) 100%);
+    background: var(--color-steel-blue);
     border: 1.5px solid rgba(255, 255, 255, 0.2);
     box-sizing: border-box;
     transition: border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1012,7 +1154,7 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
     height: 1.125rem;
     min-width: 1.125rem;
     border-radius: 50%;
-    background: linear-gradient(135deg, #ff7e40 0%, var(--color-classic-crimson) 100%);
+    background: var(--color-classic-crimson);
     color: #ffffff;
     font-family: var(--font-heading);
     font-size: 0.625rem;
@@ -1021,7 +1163,7 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
     align-items: center;
     justify-content: center;
     text-align: center;
-    box-shadow: 0 2px 8px rgba(244, 157, 55, 0.55);
+    box-shadow: 0 2px 8px rgba(215, 38, 56, 0.55);
     border: none !important;
     line-height: 1;
     padding: 0;
@@ -1254,10 +1396,10 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
     height: 0.65rem;
   }
 
-  .notif-badge-icon.badge-cyan { background: linear-gradient(135deg, var(--color-steel-blue) 0%, #1e3a8a 100%); }
-  .notif-badge-icon.badge-orange { background: linear-gradient(135deg, var(--color-carrot-orange) 0%, #9a3412 100%); }
-  .notif-badge-icon.badge-red { background: linear-gradient(135deg, var(--color-classic-crimson) 0%, #881337 100%); }
-  .notif-badge-icon.badge-emerald { background: linear-gradient(135deg, #10b981 0%, #064e3b 100%); }
+  .notif-badge-icon.badge-cyan { background-color: var(--color-steel-blue); }
+  .notif-badge-icon.badge-orange { background-color: var(--color-carrot-orange); }
+  .notif-badge-icon.badge-red { background-color: var(--color-classic-crimson); }
+  .notif-badge-icon.badge-emerald { background-color: #10b981; }
 
   .notif-item-content {
     display: flex;
@@ -1449,34 +1591,6 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
 
   .btn-register:hover {
     background-color: var(--color-steel-blue-dark);
-  }
-
-  /* Mobile Bar */
-  .nav-mobile-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    padding-top: 0.75rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    margin-top: 0.5rem;
-  }
-
-  @media (min-width: 768px) {
-    .nav-mobile-bar {
-      display: none;
-    }
-  }
-
-  .nav-tab-mobile {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.25rem;
-    font-size: 0.65rem;
-    color: #94a3b8;
-    text-decoration: none;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.5rem;
   }
 
   /* Full History Center Glass Modal (Zero Overlay Backdrop, Pure Floating Glass Modal) */
@@ -1769,8 +1883,164 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
     transition: all 0.2s ease;
   }
 
-  .btn-modal-done:hover {
-    background: rgba(255, 255, 255, 0.22);
+  /* Section Modal Custom Layout */
+  .section-modal-container {
+    width: 42rem;
+    height: auto;
+    max-height: 90vh;
+  }
+
+  .section-badge {
+    background-color: var(--color-steel-blue) !important;
+  }
+
+  .section-modal-body {
+    padding: 1.5rem 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow-y: auto;
+  }
+
+  .section-modal-label {
+    font-family: var(--font-heading);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .section-templates-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.875rem;
+  }
+
+  @media (max-width: 640px) {
+    .section-templates-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .section-template-card {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.875rem;
+    padding: 1rem;
+    border-radius: 0.875rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    user-select: none;
+  }
+
+  .section-template-card:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .section-template-card.is-selected {
+    background: rgba(63, 136, 197, 0.12);
+    border-color: var(--color-steel-blue);
+    box-shadow: 0 0 0 1px var(--color-steel-blue), 0 8px 24px rgba(63, 136, 197, 0.25);
+  }
+
+  .template-card-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.625rem;
+    background: rgba(255, 255, 255, 0.06);
+    flex-shrink: 0;
+  }
+
+  .template-card-icon svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .template-card-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .template-card-title {
+    font-family: var(--font-heading);
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 0.25rem;
+  }
+
+  .template-card-desc {
+    font-size: 0.725rem;
+    color: #94a3b8;
+    line-height: 1.35;
+    margin: 0;
+  }
+
+  .template-radio-check {
+    width: 1.125rem;
+    height: 1.125rem;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+  }
+
+  .section-template-card.is-selected .template-radio-check {
+    border-color: var(--color-steel-blue);
+    background-color: var(--color-steel-blue);
+    box-shadow: inset 0 0 0 2.5px rgba(18, 24, 38, 0.9);
+  }
+
+  .btn-modal-cancel {
+    padding: 0.45rem 1rem;
+    border-radius: 0.5rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #94a3b8;
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-modal-cancel:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+  }
+
+  .btn-modal-create-section {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 1.25rem;
+    border-radius: 0.5rem;
+    background-color: var(--color-steel-blue);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(63, 136, 197, 0.35);
+    transition: all 0.2s ease;
+  }
+
+  .btn-modal-create-section:hover {
+    background-color: var(--color-steel-blue-dark);
+    box-shadow: 0 6px 18px rgba(63, 136, 197, 0.5);
     transform: translateY(-1px);
   }
 </style>
@@ -1784,6 +2054,59 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
         e.preventDefault();
         window.dispatchEvent(new CustomEvent('open-invite-modal'));
       });
+    }
+  }
+
+  function setupNewSectionModal() {
+    const addBtn = document.getElementById('btn-add-section-nav');
+    const modal = document.getElementById('new-section-modal');
+    const closeBtn = document.getElementById('btn-close-section-modal');
+    const cancelBtn = document.getElementById('btn-cancel-section-modal');
+    const submitBtn = document.getElementById('btn-submit-section-modal');
+    const cards = modal ? modal.querySelectorAll('.section-template-card') : [];
+
+    if (addBtn && modal && !addBtn.dataset.modalAttached) {
+      addBtn.dataset.modalAttached = 'true';
+
+      let selectedType = 'ideas';
+
+      addBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      });
+
+      const closeModal = () => {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+      };
+
+      if (closeBtn) closeBtn.addEventListener('click', closeModal);
+      if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+
+      cards.forEach((card) => {
+        card.addEventListener('click', () => {
+          cards.forEach((c) => c.classList.remove('is-selected'));
+          card.classList.add('is-selected');
+          selectedType = (card as HTMLElement).dataset.viewType || 'ideas';
+        });
+      });
+
+      if (submitBtn) {
+        submitBtn.addEventListener('click', () => {
+          const urlParams = new URLSearchParams(window.location.search);
+          const currentProj = urlParams.get('project') || '';
+          const targetUrl = currentProj 
+            ? `/app?project=${encodeURIComponent(currentProj)}&view=${selectedType}` 
+            : `/app?view=${selectedType}`;
+          window.location.href = targetUrl;
+        });
+      }
     }
   }
 
@@ -1805,7 +2128,7 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
       });
 
       document.addEventListener('click', (e) => {
-        if (!popover.contains(e.target) && !notifBtn.contains(e.target)) {
+        if (!popover.contains(e.target as Node) && !notifBtn.contains(e.target as Node)) {
           popover.style.display = 'none';
         }
       });
@@ -1839,7 +2162,7 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
     const doneBtn = document.getElementById('btn-modal-done');
     const popover = document.getElementById('notif-popover-menu');
     const markAllBtn = document.getElementById('btn-modal-mark-all');
-    const searchInput = document.getElementById('notif-search-input');
+    const searchInput = document.getElementById('notif-search-input') as HTMLInputElement | null;
     const tabs = document.querySelectorAll('.notif-tab-btn');
 
     if (openBtn && modal && !openBtn.dataset.modalAttached) {
@@ -1881,8 +2204,8 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
         tab.addEventListener('click', () => {
           tabs.forEach(t => t.classList.remove('active'));
           tab.classList.add('active');
-          const filter = tab.dataset.filter;
-          const sections = modal.querySelectorAll('.notif-group-section');
+          const filter = (tab as HTMLElement).dataset.filter;
+          const sections = modal.querySelectorAll<HTMLElement>('.notif-group-section');
 
           sections.forEach((sec) => {
             if (filter === 'all') {
@@ -1901,10 +2224,10 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
 
       if (searchInput) {
         searchInput.addEventListener('input', (e) => {
-          const query = e.target.value.toLowerCase().trim();
-          const items = modal.querySelectorAll('.notif-item');
+          const query = (e.target as HTMLInputElement).value.toLowerCase().trim();
+          const items = modal.querySelectorAll<HTMLElement>('.notif-item');
           items.forEach((item) => {
-            const text = item.textContent.toLowerCase();
+            const text = item.textContent?.toLowerCase() || '';
             item.style.display = text.includes(query) ? 'flex' : 'none';
           });
         });
@@ -1914,6 +2237,7 @@ const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
 
   function initNavbar() {
     setupInviteButton();
+    setupNewSectionModal();
     setupNotificationsPopover();
     setupHistoryModal();
   }

@@ -8,6 +8,7 @@ const user = Astro.locals.user;
 
 <html lang="es">
   <head>
+    <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
     <link rel="shortcut icon" href="/favicon.svg?v=2" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -55,7 +56,7 @@ const user = Astro.locals.user;
         <main class="landing-hero container-lg">
           <div class="hero-badge">
             <svg class="hero-badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            <span>Project Tracker v1.0</span>
+            <span>v1.0</span>
           </div>
 
           <h1 class="hero-title">
@@ -151,7 +152,8 @@ const user = Astro.locals.user;
         font-size: 1rem;
         color: #ffffff;
         background-color: var(--color-steel-blue);
-        border-radius: 1rem;
+        border-radius: 1.45rem;
+        corner-shape: squircle;
         box-shadow: 0 20px 25px -5px rgba(63, 136, 197, 0.3);
         transition: all 0.2s ease;
         text-align: center;

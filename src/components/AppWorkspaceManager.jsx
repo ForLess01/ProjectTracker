@@ -19,7 +19,7 @@ export default function AppWorkspaceManager({ initialView = 'hub', currentUser }
       }
     }
     return {
-      id: 'proj-1',
+      id: 'core',
       name: 'ProjectTracker Core',
       teamName: 'Engineering Team',
     };
@@ -28,7 +28,10 @@ export default function AppWorkspaceManager({ initialView = 'hub', currentUser }
   const [isHubView] = useState(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
-      return params.get('view') === 'hub' || !params.get('project');
+      const v = params.get('view');
+      if (v === 'hub') return true;
+      if (v && v !== 'hub') return false;
+      return !params.get('project');
     }
     return initialView === 'hub';
   });

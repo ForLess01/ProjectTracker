@@ -11,23 +11,26 @@ if (!user) {
 const url = new URL(Astro.request.url);
 const projParam = url.searchParams.get('project');
 const viewParam = url.searchParams.get('view');
-const currentView = (!projParam && (!viewParam || viewParam === 'hub')) ? 'hub' : (viewParam || 'ideas');
+const isExplicitHub = viewParam === 'hub' || (!projParam && !viewParam);
+const currentView = isExplicitHub ? 'hub' : (viewParam || 'ideas');
+const projectId = projParam || 'core';
 ---
 
 <html lang="es">
   <head>
+    <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
     <link rel="shortcut icon" href="/favicon.svg?v=2" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard — Project Tracker</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Raleway:ital,wght@0,100..900;1,100..900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
   </head>
   <body class="app-body">
     
     <!-- Multi-layered Ambient Background -->
-    <div class="gradient-bg" style="min-height: 100vh;">
+    <div class="gradient-bg app-viewport-gradient">
       <div class="base"></div>
       <div class="treatment"></div>
       <div class="glow"></div>
@@ -38,9 +41,9 @@ const currentView = (!projParam && (!viewParam || viewParam === 'hub')) ? 'hub' 
       <div class="halftone"></div>
       <div class="chromatic"></div>
 
-      <div class="gradient-bg-content" style="position: relative; z-index: 10;">
+      <div class="gradient-bg-content app-viewport-content">
         <!-- Collapsed Icon-first Navigation Navbar -->
-        <NavbarGlass currentView={currentView} user={user} />
+        <NavbarGlass currentView={currentView} projectId={projectId} user={user} />
 
         <!-- App Workspace Manager (Hub or Project Table Workspace) -->
         <AppWorkspaceManager client:load initialView={currentView} currentUser={user} />
@@ -48,13 +51,36 @@ const currentView = (!projParam && (!viewParam || viewParam === 'hub')) ? 'hub' 
     </div>
 
     <style>
+      :global(html:has(.app-body)),
+      :global(body.app-body) {
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden !important;
+      }
       .app-body {
         background-color: var(--color-midnight);
         color: #f1f5f9;
         font-family: var(--font-body);
-        min-height: 100vh;
+        height: 100vh;
+        height: 100dvh;
         position: relative;
-        overflow-x: hidden;
+        overflow: hidden !important;
+      }
+      .app-viewport-gradient {
+        height: 100vh;
+        height: 100dvh;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .app-viewport-content {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-height: 0;
+        flex: 1;
+        overflow: hidden;
       }
     </style>
   </body>
