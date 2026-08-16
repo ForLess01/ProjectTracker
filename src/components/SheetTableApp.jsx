@@ -773,15 +773,17 @@ export function TableCenteredScrollbars({ containerRef }) {
   const updateScrollState = () => {
     const el = containerRef.current;
     if (!el) return;
+    const parentWidth = el.parentElement ? el.parentElement.clientWidth : el.clientWidth;
     const maxScrollX = el.scrollWidth - el.clientWidth;
+    const isOverflowingX = el.scrollWidth > parentWidth + 4 && maxScrollX > 6;
     const maxScrollY = el.scrollHeight - el.clientHeight;
-    const canX = maxScrollX > 2;
-    const canY = maxScrollY > 2;
+    const canX = isOverflowingX;
+    const canY = maxScrollY > 6;
     setScrollState({
-      canScrollX: canX,
-      ratioX: canX ? Math.min(Math.max(0, el.scrollLeft / maxScrollX), 1) : 0,
-      canScrollY: canY,
-      ratioY: canY ? Math.min(Math.max(0, el.scrollTop / maxScrollY), 1) : 0,
+      canScrollX: Boolean(canX),
+      ratioX: canX && maxScrollX > 0 ? Math.min(Math.max(0, el.scrollLeft / maxScrollX), 1) : 0,
+      canScrollY: Boolean(canY),
+      ratioY: canY && maxScrollY > 0 ? Math.min(Math.max(0, el.scrollTop / maxScrollY), 1) : 0,
     });
   };
 
@@ -797,6 +799,9 @@ export function TableCenteredScrollbars({ containerRef }) {
     if (typeof ResizeObserver !== 'undefined') {
       ro = new ResizeObserver(updateScrollState);
       ro.observe(el);
+      if (el.parentElement) {
+        ro.observe(el.parentElement);
+      }
       if (el.firstElementChild) {
         ro.observe(el.firstElementChild);
       }
@@ -1058,18 +1063,29 @@ export default function SheetTableApp({
   }, []);
 
   useEffect(() => {
-    // Show Markdown recommendation toast on entering project
+    // Show Markdown recommendation toast only once across all sessions/refreshes
+    if (typeof window === 'undefined') return;
+    try {
+      const hasSeenMdTip = localStorage.getItem('has_seen_md_tip');
+      if (hasSeenMdTip) return;
+    } catch (_) {}
+
     const timer = setTimeout(() => {
       setShowMdTip(true);
+      try {
+        localStorage.setItem('has_seen_md_tip', 'true');
+      } catch (_) {}
     }, 700);
+
     const autoHideTimer = setTimeout(() => {
       setShowMdTip(false);
     }, 8500);
+
     return () => {
       clearTimeout(timer);
       clearTimeout(autoHideTimer);
     };
-  }, [activeProject?.id]);
+  }, []);
 
   // Column Renaming State (Double-click on Header)
   const [customHeadersMap, setCustomHeadersMap] = useState(() => {
@@ -1322,6 +1338,10 @@ export default function SheetTableApp({
 
   // Column Widths & Pinning State
   const [columnWidths, setColumnWidths] = useState(DEFAULT_COL_WIDTHS);
+
+  const totalTableWidth = 44 + (activeOrderedColumns || []).reduce((sum, col) => {
+    return sum + ((columnWidths && columnWidths[col.key]) || DEFAULT_COL_WIDTHS[col.key] || 160);
+  }, 0);
 
   const getColStyle = (colKey) => {
     const w = columnWidths[colKey] || DEFAULT_COL_WIDTHS[colKey] || 160;
@@ -2357,7 +2377,6 @@ export default function SheetTableApp({
               }
               updateCell(item.id, 'title', val);
             }}
-            placeholder={currentView === 'bugs' ? 'Descripción del problema...' : currentView === 'optimizaciones' ? 'Mejora propuesta...' : currentView === 'implementaciones' ? 'Funcionalidad...' : 'Escribir idea...'}
             fontWeight="semibold"
             style={colStyle}
             {...commonProps}
@@ -2369,7 +2388,6 @@ export default function SheetTableApp({
             key={`${item.id}-context`}
             value={item.context || ''}
             onSave={(val) => updateCell(item.id, 'context', val)}
-            placeholder="Contexto..."
             style={colStyle}
             {...commonProps}
           />
@@ -2380,7 +2398,6 @@ export default function SheetTableApp({
             key={`${item.id}-location`}
             value={item.location || ''}
             onSave={(val) => updateCell(item.id, 'location', val)}
-            placeholder={currentView === 'bugs' ? 'Módulo afectado...' : 'Dónde se aplica...'}
             style={colStyle}
             {...commonProps}
           />
@@ -2438,7 +2455,6 @@ export default function SheetTableApp({
             key={`${item.id}-notes`}
             value={item.notes || ''}
             onSave={(val) => updateCell(item.id, 'notes', val)}
-            placeholder="Notas..."
             style={colStyle}
             {...commonProps}
           />
@@ -2515,7 +2531,6 @@ export default function SheetTableApp({
             key={`${item.id}-sprint`}
             value={item.sprint || ''}
             onSave={(val) => updateCell(item.id, 'sprint', val)}
-            placeholder="Sprint o Fase..."
             style={colStyle}
             {...commonProps}
           />
@@ -2526,7 +2541,6 @@ export default function SheetTableApp({
             key={`${item.id}-${colKey}`}
             value={item[colKey] || ''}
             onSave={(val) => updateCell(item.id, colKey, val)}
-            placeholder="Escribir..."
             style={colStyle}
             {...commonProps}
           />
@@ -2740,7 +2754,26 @@ export default function SheetTableApp({
                 </div>
               )}
 
-              <table className="sheet-table">
+              <table 
+                className="sheet-table"
+                style={{
+                  width: `${totalTableWidth}px`,
+                  minWidth: `${totalTableWidth}px`,
+                  maxWidth: `${totalTableWidth}px`,
+                }}
+              >
+                <colgroup>
+                  <col style={{ width: '44px', minWidth: '44px', maxWidth: '44px' }} />
+                  {activeOrderedColumns.map((colDef) => {
+                    const w = columnWidths[colDef.key] || DEFAULT_COL_WIDTHS[colDef.key] || 160;
+                    return (
+                      <col 
+                        key={colDef.key} 
+                        style={{ width: `${w}px`, minWidth: `${w}px`, maxWidth: `${w}px` }} 
+                      />
+                    );
+                  })}
+                </colgroup>
                 <thead>
                   <tr className="bg-[#140f2d] text-white text-xs font-heading font-bold uppercase tracking-wider border-b border-white/10 divide-x divide-white/10">
                     <FilterHeaderTh
@@ -3023,7 +3056,12 @@ export default function SheetTableApp({
               <span className="md-top-tip-title">Tip de edición</span>
               <button 
                 type="button" 
-                onClick={() => setShowMdTip(false)} 
+                onClick={() => {
+                  setShowMdTip(false);
+                  try {
+                    localStorage.setItem('has_seen_md_tip', 'true');
+                  } catch (_) {}
+                }} 
                 className="md-top-tip-close"
                 title="Cerrar recomendación"
               >
@@ -3276,7 +3314,6 @@ function EditableTextCell({ value, onSave, placeholder, fontWeight = 'normal', s
             onChange={handleInput}
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
-            placeholder={placeholder || "Escribe aquí..."}
             className="cell-editor-textarea"
           />
         </div>
