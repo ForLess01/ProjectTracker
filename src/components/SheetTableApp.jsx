@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { marked } from 'marked';
+import katex from 'katex';
 import { 
   Plus, Image as ImageIcon, X, Upload, Download, Trash2, Check, User, Wrench,
   Sparkles, AlertTriangle, Zap, Rocket, Lightbulb, Bug, ChevronDown, Eye, Copy, UserPlus,
@@ -3283,17 +3284,55 @@ function EditableTextCell({ value, onSave, placeholder, fontWeight = 'normal', s
   };
 
   const getMarkdownHtml = (text) => {
-    if (!text) return '';
+    if (!text || !String(text).trim()) return '';
     try {
       let s = String(text);
-      // Pre-process and normalize whitespace / accidental newlines inside Markdown delimiters
-      s = s.replace(/\*\*\s*([^*\r\n]+?)\s*\*\*/g, '**$1**');
-      s = s.replace(/(^|[^*])\*\s*([^*\r\n]+?)\s*\*(?!\*)/g, '$1*$2*');
-      s = s.replace(/__\s*([^_\r\n]+?)\s*__/g, '__$1__');
-      s = s.replace(/~~\s*([^~\r\n]+?)\s*~~/g, '~~$1~~');
+
+      // 1. Math formulas (KaTeX):
+      // Display Math: $$ ... $$
+      s = s.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => {
+        try {
+          return katex.renderToString(math.trim(), { displayMode: true, throwOnError: false });
+        } catch {
+          return `<code>$$${math}$$</code>`;
+        }
+      });
+
+      // Inline Math: $ ... $ (avoid single currencies like $100 or $1,200.00)
+      s = s.replace(/(^|[^\w\\\$])\$([^\$\n\r]+?)\$(?!\w|\$)/g, (match, prefix, math) => {
+        const trimmed = math.trim();
+        if (!trimmed || /^\d+([\.,]\d+)*$/.test(trimmed)) {
+          return match;
+        }
+        try {
+          const rendered = katex.renderToString(trimmed, { displayMode: false, throwOnError: false });
+          return `${prefix}${rendered}`;
+        } catch {
+          return match;
+        }
+      });
+
+      // 2. Extended Markdown Syntax:
+      // Highlight: ==text== -> <mark class="md-highlight">text</mark>
+      s = s.replace(/==([^=\n\r]+)==/g, '<mark class="md-highlight">$1</mark>');
+
+      // Subscript: ~text~ -> <sub>text</sub> (avoid ~~strikethrough~~)
+      s = s.replace(/(?<!~)~([^~\s\r\n]+)~(?!~)/g, '<sub>$1</sub>');
+
+      // Superscript: ^text^ -> <sup>text</sup>
+      s = s.replace(/\^([^\^\s\r\n]+)\^/g, '<sup>$1</sup>');
+
+      // 3. Task lists GFM normalization:
+      s = s.replace(/^([ \t]*)[-*+]\s+\[([ xX])\]\s+(.*)$/gm, (_, indent, checked, itemText) => {
+        const isChecked = checked.toLowerCase() === 'x';
+        return `${indent}* <span class="md-task-item ${isChecked ? 'is-checked' : ''}"><span class="md-task-box">${isChecked ? '✓' : ''}</span>${itemText}</span>`;
+      });
+
+      // 4. Marked parsing
       const parsed = marked.parse(s, { gfm: true, breaks: true, async: false });
       return typeof parsed === 'string' ? parsed : text;
-    } catch {
+    } catch (err) {
+      console.error('Markdown parse error:', err);
       return text;
     }
   };

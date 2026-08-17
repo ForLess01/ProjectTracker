@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Raleway:ital,wght@0,100..900;1,100..900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+@import 'katex/dist/katex.min.css';
 
 /* ==========================================================================
    CSS RESET & VARIABLES
@@ -1837,7 +1838,7 @@ table.sheet-table td,
   padding: 0.75rem 1rem;
   border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
-  vertical-align: middle;
+  vertical-align: top !important;
   box-sizing: border-box !important;
   overflow: visible !important;
   position: relative;
@@ -5976,22 +5977,75 @@ input[type="file"].hidden {
   display: none !important;
 }
 
-/* Markdown Cell Formatting & Bullet Lists */
+/* Markdown Cell Formatting & Extended Elements */
 .markdown-cell-content {
   color: #cbd5e1;
   font-size: 0.8125rem;
   line-height: 1.5;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* Headings: Proportional sizing suitable for table cells */
+.markdown-cell-content h1 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0.5rem 0 0.25rem 0;
+  line-height: 1.3;
+}
+
+.markdown-cell-content h2 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0.45rem 0 0.2rem 0;
+  line-height: 1.3;
+}
+
+.markdown-cell-content h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin: 0.4rem 0 0.2rem 0;
+  line-height: 1.3;
+}
+
+.markdown-cell-content h4,
+.markdown-cell-content h5,
+.markdown-cell-content h6 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  margin: 0.35rem 0 0.15rem 0;
+  line-height: 1.3;
+}
+
+.markdown-cell-content h1:first-child,
+.markdown-cell-content h2:first-child,
+.markdown-cell-content h3:first-child,
+.markdown-cell-content h4:first-child,
+.markdown-cell-content p:first-child {
+  margin-top: 0;
 }
 
 .markdown-cell-content p {
   margin-top: 0;
   margin-bottom: 0.35rem;
+  line-height: 1.45;
 }
 
 .markdown-cell-content p:last-child {
   margin-bottom: 0;
 }
 
+.markdown-cell-content hr {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  margin: 0.65rem 0;
+}
+
+/* Lists */
 .markdown-cell-content ul {
   list-style-type: disc !important;
   padding-left: 1.25rem !important;
@@ -6006,10 +6060,79 @@ input[type="file"].hidden {
   margin-bottom: 0.35rem !important;
 }
 
+.markdown-cell-content ul ul,
+.markdown-cell-content ol ul {
+  list-style-type: circle !important;
+  padding-left: 1rem !important;
+  margin: 0.15rem 0 !important;
+}
+
+.markdown-cell-content ul ul ul,
+.markdown-cell-content ol ol ol {
+  list-style-type: square !important;
+  padding-left: 1rem !important;
+  margin: 0.15rem 0 !important;
+}
+
 .markdown-cell-content li {
   margin-bottom: 0.15rem !important;
 }
 
+/* Task list checkboxes */
+.markdown-cell-content .md-task-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.markdown-cell-content .md-task-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.95rem;
+  height: 0.95rem;
+  border-radius: 0.25rem;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 0.65rem;
+  color: transparent;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.markdown-cell-content .md-task-item.is-checked .md-task-box {
+  background: rgba(34, 197, 94, 0.2);
+  border-color: rgba(34, 197, 94, 0.7);
+  color: #4ade80;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.35);
+}
+
+.markdown-cell-content .md-task-item.is-checked {
+  color: #94a3b8;
+  text-decoration: line-through;
+}
+
+/* Blockquotes */
+.markdown-cell-content blockquote {
+  margin: 0.45rem 0;
+  padding: 0.4rem 0.75rem;
+  border-left: 3px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 0 0.5rem 0.5rem 0;
+  color: #94a3b8;
+}
+
+.markdown-cell-content blockquote blockquote {
+  margin: 0.35rem 0;
+  border-left-color: rgba(63, 136, 197, 0.5);
+  background: rgba(63, 136, 197, 0.05);
+}
+
+.markdown-cell-content blockquote p {
+  margin-bottom: 0.2rem;
+}
+
+/* Formatting Elements */
 .markdown-cell-content strong {
   color: #ffffff !important;
   font-weight: 700 !important;
@@ -6020,13 +6143,129 @@ input[type="file"].hidden {
   color: #e2e8f0 !important;
 }
 
-.markdown-cell-content code {
-  background: rgba(255, 255, 255, 0.1) !important;
-  padding: 0.1rem 0.3rem !important;
+.markdown-cell-content del,
+.markdown-cell-content s {
+  text-decoration: line-through;
+  opacity: 0.65;
+}
+
+.markdown-cell-content mark,
+.markdown-cell-content .md-highlight {
+  background: rgba(244, 157, 55, 0.25) !important;
+  color: #ffd166 !important;
+  border: 1px solid rgba(244, 157, 55, 0.4) !important;
+  padding: 0.05rem 0.35rem !important;
   border-radius: 0.25rem !important;
-  font-family: var(--font-mono) !important;
+}
+
+.markdown-cell-content sub,
+.markdown-cell-content sup {
+  font-size: 0.75em !important;
+  line-height: 0 !important;
+  position: relative !important;
+  vertical-align: baseline !important;
+}
+
+.markdown-cell-content sup {
+  top: -0.45em !important;
+}
+
+.markdown-cell-content sub {
+  bottom: -0.25em !important;
+}
+
+/* Code & Syntax */
+.markdown-cell-content code {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  padding: 0.1rem 0.35rem !important;
+  border-radius: 0.3rem !important;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace !important;
   font-size: 0.75rem !important;
-  color: #22d3ee !important;
+  color: #38bdf8 !important;
+}
+
+.markdown-cell-content pre {
+  background: rgba(10, 7, 24, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 0.5rem !important;
+  padding: 0.65rem 0.85rem !important;
+  margin: 0.45rem 0 !important;
+  overflow-x: auto !important;
+  max-width: 100% !important;
+  scrollbar-width: thin !important;
+}
+
+.markdown-cell-content pre code {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  color: #7dd3fc !important;
+  font-size: 0.75rem !important;
+  line-height: 1.45 !important;
+  white-space: pre !important;
+}
+
+/* Embedded Tables inside Markdown Cells */
+.markdown-cell-content table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  margin: 0.5rem 0 !important;
+  font-size: 0.75rem !important;
+  background: rgba(0, 0, 0, 0.25) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 0.5rem !important;
+  overflow: hidden !important;
+}
+
+.markdown-cell-content th,
+.markdown-cell-content td {
+  padding: 0.35rem 0.6rem !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  text-align: left;
+}
+
+.markdown-cell-content th {
+  background: rgba(255, 255, 255, 0.06) !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  text-transform: uppercase;
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+}
+
+/* Links & Images */
+.markdown-cell-content a {
+  color: #38bdf8;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.15s ease;
+}
+
+.markdown-cell-content a:hover {
+  color: #7dd3fc;
+}
+
+.markdown-cell-content img {
+  max-width: 100%;
+  border-radius: 0.5rem;
+  margin: 0.35rem 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* KaTeX Math formulas */
+.markdown-cell-content .katex {
+  font-size: 1.05em;
+  color: #f1f5f9;
+}
+
+.markdown-cell-content .katex-display {
+  margin: 0.45rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.35rem 0;
+  scrollbar-width: thin;
 }
 
 /* ==========================================================================
